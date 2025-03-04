@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.sic6.masibelajar"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.sic6.masibelajar"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
