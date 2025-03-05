@@ -2,14 +2,35 @@ package com.sic6.masibelajar.ui.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -17,17 +38,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.sic6.masibelajar.R
 
 @Composable
-fun SignInScreen(
-    navController: NavController
-) {
+fun SignUpScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var rememberMe by remember { mutableStateOf(false) }
-
+    var username by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -62,7 +79,7 @@ fun SignInScreen(
             // Form Sign In
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Sign In",
+                    text = "Sign Up",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -70,6 +87,16 @@ fun SignInScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Input Username
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Username") },
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Username Icon") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
                 // Input Email
                 OutlinedTextField(
                     value = email,
@@ -94,17 +121,7 @@ fun SignInScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
-                    Text(text = "Remember me", fontSize = 14.sp)
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = { /* Forgot password logic */ }) {
-                        Text("Forgot Password?", color = Color(0xFF1E5A87))
-                    }
-                }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -115,7 +132,7 @@ fun SignInScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Log In", color = Color.White)
+                    Text("Sign Up", color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -125,12 +142,23 @@ fun SignInScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text("Don’t have an account?")
-                    TextButton(onClick = { navController.navigate("sign_up") }) {
-                        Text("Sign Up", color = Color(0xFF1E5A87))
+                    Text("already have an account?")
+                    TextButton(onClick = { navController.popBackStack() }) {
+                        Text("Sign In", color = Color(0xFF1E5A87))
                     }
                 }
             }
         }
-    }
+
+        }
+//    Column(
+//        modifier = Modifier.fillMaxSize(),
+//        verticalArrangement = Arrangement.Center
+//    ) {
+//        Text("Welcome to Sign Up Screen")
+//
+//        Button(onClick = { navController.popBackStack() }) {
+//            Text("Back to Sign In")
+//        }
+//    }
 }

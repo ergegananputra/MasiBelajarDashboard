@@ -2,4 +2,13 @@
 <resources>
 
     <style name="Theme.MasiBelajarDashboard" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.MasiBelajarDashboard.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.MasiBelajarDashboard.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.MasiBelajarDashboard.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
