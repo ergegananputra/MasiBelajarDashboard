@@ -24,12 +24,6 @@ class MainActivity : ComponentActivity() {
 //        enableEdgeToEdge()
         setContent {
             MasiBelajarDashboardTheme {
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    Greeting(
-//                        name = "Android",
-//                        modifier = Modifier.padding(innerPadding)
-//                    )
-//                }
 
                 val navController = rememberNavController()
 

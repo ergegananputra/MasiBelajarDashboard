@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,19 +41,25 @@ fun SignInScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_baby_2),
-                contentDescription = "Illustration",
+            // Box untuk mengatur posisi gambar bayi
+            Box(
                 modifier = Modifier
-                    .size(200.dp)
-                    .padding(top = 40.dp)
-            )
-            // Welcome Back
-            Spacer(modifier = Modifier.height(50.dp))
+                    .align(Alignment.CenterHorizontally) // Pusatkan horizontal
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_baby_cloud),
+                    contentDescription = "Illustration",
+                    modifier = Modifier
+                        .size(300.dp) // Perbesar gambar bayi
+                        .align(Alignment.Center)
+//                        .offset(y = (-100).dp) // Geser ke bawah agar proporsional
+                )
+            }
+
+            // Welcome text
             Text(
                 text = "Welcome Back!",
-                fontSize = 24.sp,
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF1E5A87)
             )
@@ -93,7 +100,6 @@ fun SignInScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -132,5 +138,22 @@ fun SignInScreen(
                 }
             }
         }
+
+        // Gambar lingkaran bawah
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_circle_layer),
+                contentDescription = "circle",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.BottomCenter)
+                    .scale(1.5f)
+                    .offset(y = 400.dp)
+            )
+        }
     }
 }
+
