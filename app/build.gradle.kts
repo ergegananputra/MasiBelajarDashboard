@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    // Serialization
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -67,4 +70,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Google Font
+    implementation(libs.androidx.ui.text.google.fonts)
+
+    // Icons
+    implementation(libs.androidx.material.icons.extended)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
 }
