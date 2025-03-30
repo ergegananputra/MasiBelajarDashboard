@@ -38,7 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.navigation.graphs.FeatureGraph
 import com.sic6.masibelajar.ui.screens.components.CircleBackground
 import com.sic6.masibelajar.ui.screens.monitoring.components.MenuButton
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
@@ -52,12 +55,26 @@ import com.sic6.masibelajar.ui.theme.interFontFamily
 @Composable
 private fun MonitoringScreenDeveloperPreview() {
     MasiBelajarDashboardTheme {
-        MonitoringScreen()
+        MonitoringScreen(rememberNavController())
     }
 }
 
 @Composable
-fun MonitoringScreen(modifier: Modifier = Modifier) {
+fun MonitoringScreen(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    val monitoringMenus = listOf(
+        Triple("Switch", Icons.Outlined.PhotoCamera) {},
+        Triple("Fullscreen", Icons.Outlined.Fullscreen) { navController.navigate(FeatureGraph.Fullscreen) },
+        Triple("Screenshot", Icons.Outlined.ScreenshotMonitor) {},
+        Triple("Playback", Icons.Outlined.SlowMotionVideo) {},
+        Triple("History", Icons.Outlined.BrowseGallery) { navController.navigate(FeatureGraph.History) },
+        Triple("Screen On", Icons.Outlined.Videocam) {},
+        Triple("Boundary Off", Icons.Outlined.HideImage) {},
+        Triple("Alarm", Icons.Outlined.NotificationsActive) {}
+    )
+
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             // Video stream placeholder ---
@@ -85,9 +102,11 @@ fun MonitoringScreen(modifier: Modifier = Modifier) {
                     MenuButton(
                         name = menu.first,
                         icon = menu.second,
+                        onClick = menu.third
                     )
                 }
             }
+
             ElevatedButton(
                 onClick = {},
                 shape = RoundedCornerShape(8.dp),
@@ -129,14 +148,3 @@ fun MonitoringScreen(modifier: Modifier = Modifier) {
         )
     }
 }
-
-val monitoringMenus = listOf(
-    "Switch" to Icons.Outlined.PhotoCamera,
-    "Fullscreen" to Icons.Outlined.Fullscreen,
-    "Screenshot" to Icons.Outlined.ScreenshotMonitor,
-    "Playback" to Icons.Outlined.SlowMotionVideo,
-    "History" to Icons.Outlined.BrowseGallery,
-    "Screen On" to Icons.Outlined.Videocam,
-    "Boundary Off" to Icons.Outlined.HideImage,
-    "Alarm" to Icons.Outlined.NotificationsActive
-)
