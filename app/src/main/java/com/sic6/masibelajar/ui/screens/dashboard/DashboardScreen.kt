@@ -6,8 +6,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.sic6.masibelajar.ui.navigation.graphs.MainGraph
+import com.sic6.masibelajar.ui.navigation.graphs.DashboardGraph
 import com.sic6.masibelajar.ui.screens.dashboard.components.AppBottomNavigation
 import com.sic6.masibelajar.ui.screens.dashboard.components.AppTopBar
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
@@ -20,20 +21,24 @@ import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 @Composable
 private fun DashboardScreenDeveloperPreview() {
     MasiBelajarDashboardTheme {
-        DashboardScreen()
+        DashboardScreen(rememberNavController())
     }
 }
 
 @Composable
-fun DashboardScreen(modifier: Modifier = Modifier) {
+fun DashboardScreen(
+    parentNavController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
     Scaffold(
         topBar = { AppTopBar(navController) },
         bottomBar = { AppBottomNavigation(navController) },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
-        MainGraph.DashboardNavHost(
+        DashboardGraph.DashboardNavHost(
             navController = navController,
+            parentNavController = parentNavController,
             modifier = Modifier.padding(innerPadding)
         )
     }

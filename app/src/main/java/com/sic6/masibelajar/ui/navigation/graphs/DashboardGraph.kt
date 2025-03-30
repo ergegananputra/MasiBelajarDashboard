@@ -11,22 +11,23 @@ import com.sic6.masibelajar.ui.screens.setting.SettingScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class MainGraph {
+sealed class DashboardGraph {
 
     @Serializable
-    data object Monitoring : MainGraph()
+    data object Monitoring : DashboardGraph()
 
     @Serializable
-    data object Article : MainGraph()
+    data object Article : DashboardGraph()
 
     @Serializable
-    data object Setting : MainGraph()
+    data object Setting : DashboardGraph()
 
     companion object {
         @Composable
         fun DashboardNavHost(
             navController: NavHostController,
-//            eventHandler : (MainGraph) -> Unit,
+            parentNavController: NavHostController,
+//            eventHandler : (DashboardGraph) -> Unit,
             modifier: Modifier = Modifier
         ) {
             NavHost(
@@ -35,11 +36,22 @@ sealed class MainGraph {
             ) {
                 composable<Monitoring> {
                     MonitoringScreen(
+                        navController = parentNavController,
                         modifier = modifier
                     )
                 }
                 composable<Article> {
                     ArticleScreen(
+                        onArticleClick = { article ->
+                            parentNavController.navigate(
+                                FeatureGraph.Read(
+                                    title = article.title,
+                                    author = article.author,
+                                    date = article.date,
+                                    content = article.content
+                                )
+                            )
+                        },
                         modifier = modifier
                     )
                 }

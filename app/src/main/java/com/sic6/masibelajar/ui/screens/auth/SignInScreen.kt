@@ -40,6 +40,9 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.navigation.graphs.AuthGraph
+import com.sic6.masibelajar.ui.navigation.graphs.FeatureGraph
+import com.sic6.masibelajar.ui.navigation.graphs.RootGraph
 import com.sic6.masibelajar.ui.screens.components.CircleBackground
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
@@ -152,7 +155,13 @@ fun SignInScreen(
 
                 // Login Button
                 Button(
-                    onClick = { navController.navigate("dashboard") },
+                    onClick = {
+                        navController.navigate(FeatureGraph.Dashboard) {
+                            popUpTo(RootGraph.Auth) {
+                                inclusive = true
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 ) {
@@ -168,8 +177,8 @@ fun SignInScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Don’t have an account?")
-                    TextButton(onClick = { navController.navigate("sign_up") }) {
-                        Text("Sign Up",)
+                    TextButton(onClick = { navController.navigate(AuthGraph.SignUp) }) {
+                        Text("Sign Up")
                     }
                 }
             }

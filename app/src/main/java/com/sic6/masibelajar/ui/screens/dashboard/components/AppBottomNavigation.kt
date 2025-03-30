@@ -12,7 +12,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.sic6.masibelajar.ui.navigation.menus.MainNavigationMenu
+import com.sic6.masibelajar.ui.navigation.menus.DashboardNavigationMenu
 
 @Composable
 fun AppBottomNavigation(
@@ -23,7 +23,7 @@ fun AppBottomNavigation(
     val currentDestination = navBackStackEntry?.destination
 
     NavigationBar {
-        MainNavigationMenu.menus.forEach { menu ->
+        DashboardNavigationMenu.menus.forEach { menu ->
             val selected = currentDestination?.hierarchy?.any { it.hasRoute(menu.route::class) } == true
             NavigationBarItem(
                 icon = { Icon(imageVector = if (selected) menu.iconSelected else menu.icon, contentDescription = menu.name) },
