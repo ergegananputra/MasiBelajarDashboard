@@ -84,10 +84,10 @@ fun SignInScreen(
                     .align(Alignment.CenterHorizontally) // Pusatkan horizontal
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_baby_cloud),
+                    painter = painterResource(id = R.mipmap.ic_lokari_2),
                     contentDescription = "Illustration",
                     modifier = Modifier
-                        .size(300.dp) // Perbesar gambar bayi
+                        .size(250.dp) // Perbesar gambar bayi
                         .align(Alignment.Center)
 //                        .offset(y = (-100).dp) // Geser ke bawah agar proporsional
                 )
