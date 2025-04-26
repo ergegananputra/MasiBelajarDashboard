@@ -78,6 +78,8 @@ fun SignInScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Spacer(modifier = Modifier.height(60.dp))
             // Box untuk mengatur posisi gambar bayi
             Box(
                 modifier = Modifier
@@ -87,7 +89,7 @@ fun SignInScreen(
                     painter = painterResource(id = R.mipmap.ic_lokari_2),
                     contentDescription = "Illustration",
                     modifier = Modifier
-                        .size(250.dp) // Perbesar gambar bayi
+                        .size(200.dp) // Perbesar gambar bayi
                         .align(Alignment.Center)
 //                        .offset(y = (-100).dp) // Geser ke bawah agar proporsional
                 )

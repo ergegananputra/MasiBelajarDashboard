@@ -13,10 +13,11 @@ import com.sic6.masibelajar.ui.navigation.graphs.DashboardGraph
 sealed class DashboardNavigationMenu(val name: String, val route: DashboardGraph, val icon: ImageVector, val iconSelected: ImageVector) {
 
     data object Monitoring : DashboardNavigationMenu("Monitoring", DashboardGraph.Monitoring, Icons.Outlined.Videocam, Icons.Rounded.Videocam)
+    data object Smart : DashboardNavigationMenu("Smart", DashboardGraph.Smart, Icons.Outlined.Videocam, Icons.Rounded.Videocam)
     data object Article : DashboardNavigationMenu("Article", DashboardGraph.Article, Icons.TwoTone.MenuBook, Icons.Filled.MenuBook)
     data object Setting : DashboardNavigationMenu("Setting", DashboardGraph.Setting, Icons.Outlined.Settings, Icons.Rounded.Settings)
 
     companion object {
-        val menus = listOf(Monitoring, Article, Setting)
+        val menus = listOf(Monitoring, Smart, Article, Setting)
     }
 }

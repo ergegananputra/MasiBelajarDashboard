@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.sic6.masibelajar.ui.screens.article.ArticleScreen
 import com.sic6.masibelajar.ui.screens.monitoring.MonitoringScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
+import com.sic6.masibelajar.ui.screens.smart.SmartScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,6 +16,9 @@ sealed class DashboardGraph {
 
     @Serializable
     data object Monitoring : DashboardGraph()
+
+    @Serializable
+    data object Smart : DashboardGraph()
 
     @Serializable
     data object Article : DashboardGraph()
@@ -37,6 +41,11 @@ sealed class DashboardGraph {
                 composable<Monitoring> {
                     MonitoringScreen(
                         navController = parentNavController,
+                        modifier = modifier
+                    )
+                }
+                composable<Smart> {
+                    SmartScreen(
                         modifier = modifier
                     )
                 }
