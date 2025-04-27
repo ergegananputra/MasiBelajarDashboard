@@ -1,5 +1,6 @@
 package com.sic6.masibelajar.ui.screens.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -58,6 +60,16 @@ private fun SignInScreenDeveloperPreview() {
         SignInScreen(navController)
     }
 }
+
+fun loginUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
+    if (password.length > 8) {
+        callback(Result.success(Unit))
+    } else {
+        callback(Result.failure(Exception("Password must be longer than 8 characters")))
+
+    }
+}
+
 
 @Composable
 fun SignInScreen(
@@ -156,21 +168,42 @@ fun SignInScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Login Button
+//                Button(
+//                    onClick = {
+//                        navController.navigate(FeatureGraph.Dashboard) {
+//                            popUpTo(RootGraph.Auth) {
+//                                inclusive = true
+//                            }
+//                        }
+//                    },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(8.dp)
+//                ) {
+//                    Text("Log In")
+//                }
+
+                val context = LocalContext.current
                 Button(
                     onClick = {
-                        navController.navigate(FeatureGraph.Dashboard) {
-                            popUpTo(RootGraph.Auth) {
-                                inclusive = true
+                        loginUser(email, password) { result ->
+                            result.onSuccess {
+                                navController.navigate(FeatureGraph.Dashboard) {
+                                    popUpTo(RootGraph.Auth) {
+                                        inclusive = true
+                                    }
+                                }
+                            }.onFailure { exception ->
+                                // Misal: munculin Toast atau Snackbar error
+                                println("Login failed: ${exception.message}")
+                                Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
                             }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
-                ) {
+                ){
                     Text("Log In")
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Sign Up
                 Row(

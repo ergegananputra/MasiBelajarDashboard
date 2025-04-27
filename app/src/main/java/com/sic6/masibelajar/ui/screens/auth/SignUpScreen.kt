@@ -1,5 +1,6 @@
 package com.sic6.masibelajar.ui.screens.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -40,6 +42,8 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.navigation.graphs.FeatureGraph
+import com.sic6.masibelajar.ui.navigation.graphs.RootGraph
 import com.sic6.masibelajar.ui.screens.components.CircleBackground
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
@@ -53,6 +57,15 @@ private fun SignUpScreenDeveloperPreview() {
     MasiBelajarDashboardTheme {
         val navController = rememberNavController()
         SignUpScreen(navController)
+    }
+}
+
+fun signUpUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
+    if (password.length > 8) {
+        callback(Result.success(Unit))
+    } else {
+        callback(Result.failure(Exception("Password must be longer than 8 characters")))
+
     }
 }
 
@@ -152,14 +165,28 @@ fun SignUpScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Sign Up Button
+
+                val context = LocalContext.current
                 Button(
-                    onClick = { /* Sign Up Logic */ },
+                    onClick = {
+                        signUpUser(email, password) { result ->
+                            result.onSuccess {
+                                navController.navigate(FeatureGraph.Dashboard) {
+                                    popUpTo(RootGraph.Auth) {
+                                        inclusive = true
+                                    }
+                                }
+                            }.onFailure { exception ->
+                                println("Sign Up Failed: ${exception.message}")
+                                Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Sign Up",)
+                ){
+                    Text("Sign Up")
                 }
-
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Navigate to Sign In
