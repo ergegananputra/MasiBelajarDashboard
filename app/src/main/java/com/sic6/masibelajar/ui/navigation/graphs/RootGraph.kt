@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class RootGraph {
-
     @Serializable
     data object Auth : RootGraph()
 
