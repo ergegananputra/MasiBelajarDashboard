@@ -5,7 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.sic6.masibelajar.ui.navigation.menus.DashboardNavigationMenu
 import com.sic6.masibelajar.ui.screens.article.ArticleScreen
+import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.MonitoringScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
 import com.sic6.masibelajar.ui.screens.smart.SmartScreen
@@ -15,7 +17,7 @@ import kotlinx.serialization.Serializable
 sealed class DashboardGraph {
 
     @Serializable
-    data object Monitoring : DashboardGraph()
+    data object Home : DashboardGraph()
 
     @Serializable
     data object Smart : DashboardGraph()
@@ -36,10 +38,10 @@ sealed class DashboardGraph {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = Monitoring
+                startDestination = Home
             ) {
-                composable<Monitoring> {
-                    MonitoringScreen(
+                composable<Home> {
+                    HomeScreen(
                         navController = parentNavController,
                         modifier = modifier
                     )
