@@ -1,8 +1,10 @@
 package com.sic6.masibelajar.ui.navigation.menus
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.SentimentSatisfied
+import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Videocam
@@ -18,7 +20,7 @@ sealed class DashboardNavigationMenu(val name: String, val route: DashboardGraph
 
     data object Home : DashboardNavigationMenu("Home", DashboardGraph.Home, Icons.Outlined.Home, Icons.Rounded.Home)
     data object Smart : DashboardNavigationMenu("Smart", DashboardGraph.Smart, Icons.Default.SentimentSatisfied, Icons.Rounded.SentimentSatisfied)
-    data object Article : DashboardNavigationMenu("Article", DashboardGraph.Article, Icons.TwoTone.MenuBook, Icons.Filled.MenuBook)
+    data object Article : DashboardNavigationMenu("History", DashboardGraph.History, Icons.Outlined.History, Icons.Filled.History)
     data object Setting : DashboardNavigationMenu("Setting", DashboardGraph.Setting, Icons.Outlined.Settings, Icons.Rounded.Settings)
 
     companion object {

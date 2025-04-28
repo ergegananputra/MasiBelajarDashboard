@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.sic6.masibelajar.ui.navigation.menus.DashboardNavigationMenu
 import com.sic6.masibelajar.ui.screens.article.ArticleScreen
 import com.sic6.masibelajar.ui.screens.home.HomeScreen
+import com.sic6.masibelajar.ui.screens.monitoring.HistoryScreen
 import com.sic6.masibelajar.ui.screens.monitoring.MonitoringScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
 import com.sic6.masibelajar.ui.screens.smart.AlarmScreen
@@ -23,6 +24,9 @@ sealed class DashboardGraph {
 
     @Serializable
     data object Smart : DashboardGraph()
+
+    @Serializable
+    data object History : DashboardGraph()
 
     @Serializable
     data object Article : DashboardGraph()
@@ -62,20 +66,23 @@ sealed class DashboardGraph {
                     AlarmScreen(navController = navController,
                         modifier = modifier)
                 }
-                composable<Article> {
-                    ArticleScreen(
-                        onArticleClick = { article ->
-                            parentNavController.navigate(
-                                FeatureGraph.Read(
-                                    title = article.title,
-                                    author = article.author,
-                                    date = article.date,
-                                    content = article.content
-                                )
-                            )
-                        },
-                        modifier = modifier
-                    )
+//                composable<Article> {
+//                    ArticleScreen(
+//                        onArticleClick = { article ->
+//                            parentNavController.navigate(
+//                                FeatureGraph.Read(
+//                                    title = article.title,
+//                                    author = article.author,
+//                                    date = article.date,
+//                                    content = article.content
+//                                )
+//                            )
+//                        },
+//                        modifier = modifier
+//                    )
+//                }
+                composable<History> {
+                    HistoryScreen()
                 }
                 composable<Setting> {
                     SettingScreen(
