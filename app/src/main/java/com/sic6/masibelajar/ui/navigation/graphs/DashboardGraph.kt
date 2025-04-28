@@ -10,7 +10,9 @@ import com.sic6.masibelajar.ui.screens.article.ArticleScreen
 import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.MonitoringScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
-import com.sic6.masibelajar.ui.screens.smart.SmartScreen
+import com.sic6.masibelajar.ui.screens.smart.AlarmScreen
+import com.sic6.masibelajar.ui.screens.smart.CameraScreen
+import com.sic6.masibelajar.ui.screens.smart.SmartSettingScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -47,9 +49,18 @@ sealed class DashboardGraph {
                     )
                 }
                 composable<Smart> {
-                    SmartScreen(
+                    SmartSettingScreen(
+                        navController = navController,
                         modifier = modifier
                     )
+                }
+                composable("camera") {
+                    CameraScreen(navController = navController,
+                        modifier = modifier)
+                }
+                composable("alarm") {
+                    AlarmScreen(navController = navController,
+                        modifier = modifier)
                 }
                 composable<Article> {
                     ArticleScreen(

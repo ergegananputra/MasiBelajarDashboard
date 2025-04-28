@@ -3,119 +3,137 @@ package com.sic6.masibelajar.ui.screens.smart
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SmartScreen(
+fun SmartSettingScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Smart",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { /* Handle back */ }) {
-                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back")
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        LazyColumn(
-            contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 16.dp)
-        ) {
-            item {
-                Text(
-                    text = "Smart Setting",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-            item {
-                Text(
-                    text = "Atur Batas Sensor",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            item {
-                SensorGrid()
-            }
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = "Atur Alarm",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                )
-            }
-        }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = "Smart Setting",
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Configure your smart security needs!",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        SettingOptionCard(
+            icon = Icons.Default.PhotoCamera,
+            iconBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+            iconTint = MaterialTheme.colorScheme.primary,
+            title = "Camera Setting",
+            subtitle = "Configure your camera settings",
+            onClick = { navController.navigate("camera")}
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        SettingOptionCard(
+            icon = Icons.Default.Warning,
+            iconBackgroundColor = MaterialTheme.colorScheme.errorContainer,
+            iconTint = MaterialTheme.colorScheme.error,
+            title = "Alarm Configuration",
+            subtitle = "Set up and manage alarm configurations",
+            onClick = { navController.navigate("alarm") }
+        )
     }
 }
 
 @Composable
-fun SensorGrid() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+fun SettingOptionCard(
+    icon: ImageVector,
+    iconBackgroundColor: Color,
+    iconTint: Color,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxWidth()
         ) {
-            SensorItem()
-            SensorItem()
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(40.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconTint,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "Next",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            SensorItem()
-            SensorItem()
-        }
-    }
-}
-
-@Composable
-fun SensorItem() {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .aspectRatio(1f) // Membuat kotak
-    ) {
-        Text(
-            text = "Batas Atas Kanan",
-            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-            modifier = Modifier.align(Alignment.Center)
-        )
     }
 }
 
 @Preview(
     name = "Light Mode",
+    showSystemUi = true,
     showBackground = true,
 )
 @Composable
-private fun SmartScreenDeveloperPreview() {
+fun SmartSettingScreenPreview() {
     MasiBelajarDashboardTheme {
-        SmartScreen()
+        SmartSettingScreen(rememberNavController())
     }
 }
