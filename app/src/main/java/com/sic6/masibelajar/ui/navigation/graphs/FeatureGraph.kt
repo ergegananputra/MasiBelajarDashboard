@@ -37,9 +37,7 @@ sealed class FeatureGraph {
             composable<Dashboard> { DashboardScreen(navController) }
             composable<Fullscreen> { CameraFullScreen() }
             composable<History> {
-                HistoryScreen(
-                    onBackClick = { navController.navigateUp() }
-                )
+                HistoryScreen()
             }
             composable<Read> {
                 val args = it.toRoute<Read>()

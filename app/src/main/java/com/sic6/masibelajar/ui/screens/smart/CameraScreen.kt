@@ -1,6 +1,7 @@
 package com.sic6.masibelajar.ui.screens.smart
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.VideocamOff
+import androidx.compose.material.icons.outlined.VideocamOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +41,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.sic6.masibelajar.domain.entities.VideoStreamRequest
+import com.sic6.masibelajar.ui.components.Base64Image
+import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 
 @Preview(showBackground = true)
@@ -51,8 +59,11 @@ private fun CameraScreenPreview() {
 @Composable
 fun CameraScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: WebSocketViewModel = viewModel()
 ) {
+    val response by viewModel.response.collectAsState()
+
     var ipCamera by remember { mutableStateOf("192.1681.001") }
     var numberOfPoints by remember { mutableStateOf("4") }
     var point1X by remember { mutableStateOf("4") }
@@ -111,19 +122,40 @@ fun CameraScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                ) {
-//            Image(
-//                painter = painterResource(id = R.drawable.ic_placeholder_camera), // Ganti dengan gambar kamera
-//                contentDescription = "Camera Preview",
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier.fillMaxSize()
-//            )
+                if (response != null) {
+                    Base64Image(
+                        base64String = response!!.data.frame,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+                } else {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.VideocamOff,
+                            tint = MaterialTheme.colorScheme.outlineVariant,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Video unavailable",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.outlineVariant
+                        )
+                    }
                 }
             }
             LabeledTextField(

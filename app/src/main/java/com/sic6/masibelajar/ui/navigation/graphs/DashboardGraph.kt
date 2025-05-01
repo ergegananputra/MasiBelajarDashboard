@@ -2,9 +2,11 @@ package com.sic6.masibelajar.ui.navigation.graphs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.HistoryScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
@@ -23,10 +25,13 @@ sealed class DashboardGraph {
     data object Smart : DashboardGraph()
 
     @Serializable
-    data object History : DashboardGraph()
+    data object Camera : DashboardGraph()
 
     @Serializable
-    data object Article : DashboardGraph()
+    data object Alarm : DashboardGraph()
+
+    @Serializable
+    data object History : DashboardGraph()
 
     @Serializable
     data object Setting : DashboardGraph()
@@ -37,7 +42,8 @@ sealed class DashboardGraph {
             navController: NavHostController,
             parentNavController: NavHostController,
 //            eventHandler : (DashboardGraph) -> Unit,
-            modifier: Modifier = Modifier
+            modifier: Modifier = Modifier,
+            viewModel: WebSocketViewModel = viewModel()
         ) {
             NavHost(
                 navController = navController,
@@ -46,6 +52,7 @@ sealed class DashboardGraph {
                 composable<Home> {
                     HomeScreen(
                         navController = parentNavController,
+                        viewModel = viewModel,
                         modifier = modifier
                     )
                 }
@@ -55,20 +62,25 @@ sealed class DashboardGraph {
                         modifier = modifier
                     )
                 }
-                composable("camera") {
+                composable<Camera> {
                     CameraScreen(
                         navController = navController,
+                        viewModel = viewModel,
                         modifier = modifier
                     )
                 }
-                composable("alarm") {
+                composable<Alarm> {
                     AlarmScreen(
                         navController = navController,
+                        viewModel = viewModel,
                         modifier = modifier
                     )
                 }
                 composable<History> {
-                    HistoryScreen(modifier = modifier)
+                    HistoryScreen(
+                        viewModel = viewModel,
+                        modifier = modifier
+                    )
                 }
                 composable<Setting> {
                     SettingScreen(

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class Results(
     val counts: Counts,
     val fall: Boolean,
-    val id: String? = null,
+    val id: String,
     val out_of_safezone: Boolean,
     val timestamp: String
 )

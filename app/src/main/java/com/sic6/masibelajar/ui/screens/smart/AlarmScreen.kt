@@ -44,9 +44,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 
 @Preview(showBackground = true)
@@ -59,7 +61,8 @@ private fun AlarmScreenPreview() {
 @Composable
 fun AlarmScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: WebSocketViewModel = viewModel()
 ) {
     var waitTime by remember { mutableStateOf("3000") }
     var fallDetection by remember { mutableStateOf(false) }

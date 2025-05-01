@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.sic6.masibelajar.ui.navigation.graphs.DashboardGraph
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
 @Preview(
@@ -74,7 +75,7 @@ fun SmartSettingScreen(
             iconTint = MaterialTheme.colorScheme.primary,
             title = "Camera Setting",
             subtitle = "Configure your camera settings",
-            onClick = { navController.navigate("camera")}
+            onClick = { navController.navigate(DashboardGraph.Camera)}
         )
         Spacer(modifier = Modifier.height(12.dp))
         SettingOptionCard(
@@ -83,7 +84,7 @@ fun SmartSettingScreen(
             iconTint = MaterialTheme.colorScheme.error,
             title = "Alarm Configuration",
             subtitle = "Set up and manage alarm configurations",
-            onClick = { navController.navigate("alarm") }
+            onClick = { navController.navigate(DashboardGraph.Alarm) }
         )
     }
 }

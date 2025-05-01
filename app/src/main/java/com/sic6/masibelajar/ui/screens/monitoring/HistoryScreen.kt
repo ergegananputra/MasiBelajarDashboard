@@ -42,7 +42,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.screens.monitoring.components.HistoryCard
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
@@ -58,8 +60,8 @@ private fun HistoryScreenDeveloperPreview() {
 }
 @Composable
 fun HistoryScreen(
-    onBackClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: WebSocketViewModel = viewModel()
 ) {
     Column(
         modifier = modifier
