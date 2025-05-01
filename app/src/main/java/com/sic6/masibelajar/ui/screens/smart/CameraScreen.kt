@@ -1,33 +1,53 @@
 package com.sic6.masibelajar.ui.screens.smart
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.sic6.masibelajar.R
+import androidx.navigation.compose.rememberNavController
+import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 
+@Preview(showBackground = true)
+@Composable
+private fun CameraScreenPreview() {
+    CameraScreen(rememberNavController())
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraScreen(
     navController: NavHostController,
@@ -45,150 +65,159 @@ fun CameraScreen(
     var point4Y by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(16.dp)
-    ) {
-        // Top bar
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-            Text(
-                text = "Camera Setting",
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.weight(1f)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Camera Settings",
+                        fontWeight = FontWeight.Medium
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    Button(
+                        onClick = { /* Save action */ },
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("Save")
+                    }
+                }
             )
-            Button(
-                onClick = { /* Save action */ },
-                enabled = true,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
-            ) {
-                Text("Save")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // IP Camera Input
-        Text("IP Camera Input", fontWeight = FontWeight.Medium)
-        OutlinedTextField(
-            value = ipCamera,
-            onValueChange = { ipCamera = it },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Preview
-        Text("Preview", fontWeight = FontWeight.Medium)
-        Box(
+        },
+    ) { innerPadding ->
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray)
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
+            LabeledTextField(
+                label = "IP Camera Input",
+                value = ipCamera,
+                onValueChange = { ipCamera = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Column {
+                Text(
+                    text = "Preview",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                ) {
 //            Image(
 //                painter = painterResource(id = R.drawable.ic_placeholder_camera), // Ganti dengan gambar kamera
 //                contentDescription = "Camera Preview",
 //                contentScale = ContentScale.Crop,
 //                modifier = Modifier.fillMaxSize()
 //            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Number of Points
-        Text("Number of Points (Minimum 3)", fontWeight = FontWeight.Medium)
-        OutlinedTextField(
-            value = numberOfPoints,
-            onValueChange = { numberOfPoints = it },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Adjust Sensor Points
-        Text("Adjust Censor Points", fontWeight = FontWeight.Medium)
-
-        Text("Point 1")
-        Row {
-            OutlinedTextField(
-                value = point1X,
-                onValueChange = { point1X = it },
-                label = { Text("X Position") },
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                singleLine = true
+                }
+            }
+            LabeledTextField(
+                label = "Number of Points (Minimum 3)",
+                value = numberOfPoints,
+                onValueChange = { numberOfPoints = it },
+                modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = point1Y,
-                onValueChange = { point1Y = it },
-                label = { Text("Y Position") },
-                modifier = Modifier.weight(1f),
-                singleLine = true
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Adjust Points",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Medium
             )
+            PositionTextField(title = "Point 1") {
+                LabeledTextField(
+                    label = "X Position",
+                    value = point1X,
+                    onValueChange = { point1X = it },
+                    modifier = Modifier.weight(1f)
+                )
+                LabeledTextField(
+                    label = "Y Position",
+                    value = point1Y,
+                    onValueChange = { point1Y = it },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            PositionTextField(title = "Point 2") {
+                LabeledTextField(
+                    label = "X Position",
+                    value = point2X,
+                    onValueChange = { point2X = it },
+                    modifier = Modifier.weight(1f)
+                )
+                LabeledTextField(
+                    label = "Y Position",
+                    value = point2Y,
+                    onValueChange = { point2Y = it },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            PositionTextField(title = "Point 3") {
+                LabeledTextField(
+                    label = "X Position",
+                    value = point3X,
+                    onValueChange = { point3X = it },
+                    modifier = Modifier.weight(1f)
+                )
+                LabeledTextField(
+                    label = "Y Position",
+                    value = point3Y,
+                    onValueChange = { point3Y = it },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            PositionTextField(title = "Point 4") {
+                LabeledTextField(
+                    label = "X Position",
+                    value = point4X,
+                    onValueChange = { point4X = it },
+                    modifier = Modifier.weight(1f)
+                )
+                LabeledTextField(
+                    label = "Y Position",
+                    value = point4Y,
+                    onValueChange = { point4Y = it },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Spacer(modifier = Modifier.height(100.dp))
         }
+    }
+}
 
+@Composable
+fun PositionTextField(
+    title: String,
+    modifier: Modifier = Modifier,
+    textFields: @Composable (RowScope.() -> Unit)
+) {
+    Column(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.outline,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            HorizontalDivider()
+        }
         Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Point 2")
-        Row {
-            OutlinedTextField(
-                value = point2X,
-                onValueChange = { point2X = it },
-                label = { Text("X Position") },
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = point2Y,
-                onValueChange = { point2Y = it },
-                label = { Text("Y Position") },
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
-        }
-
-        Text("Point 3")
-        Row {
-            OutlinedTextField(
-                value = point3X,
-                onValueChange = { point3X = it },
-                label = { Text("X Position") },
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = point3Y,
-                onValueChange = { point3Y = it },
-                label = { Text("Y Position") },
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
-        }
-
-        Text("Point 4")
-        Row {
-            OutlinedTextField(
-                value = point4X,
-                onValueChange = { point4X = it },
-                label = { Text("X Position") },
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                singleLine = true
-            )
-            OutlinedTextField(
-                value = point4Y,
-                onValueChange = { point4Y = it },
-                label = { Text("Y Position") },
-                modifier = Modifier.weight(1f),
-                singleLine = true
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            textFields()
         }
     }
 }

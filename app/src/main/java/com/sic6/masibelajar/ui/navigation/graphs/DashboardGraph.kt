@@ -5,11 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sic6.masibelajar.ui.navigation.menus.DashboardNavigationMenu
-import com.sic6.masibelajar.ui.screens.article.ArticleScreen
 import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.HistoryScreen
-import com.sic6.masibelajar.ui.screens.monitoring.MonitoringScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
 import com.sic6.masibelajar.ui.screens.smart.AlarmScreen
 import com.sic6.masibelajar.ui.screens.smart.CameraScreen
@@ -59,30 +56,19 @@ sealed class DashboardGraph {
                     )
                 }
                 composable("camera") {
-                    CameraScreen(navController = navController,
-                        modifier = modifier)
+                    CameraScreen(
+                        navController = navController,
+                        modifier = modifier
+                    )
                 }
                 composable("alarm") {
-                    AlarmScreen(navController = navController,
-                        modifier = modifier)
+                    AlarmScreen(
+                        navController = navController,
+                        modifier = modifier
+                    )
                 }
-//                composable<Article> {
-//                    ArticleScreen(
-//                        onArticleClick = { article ->
-//                            parentNavController.navigate(
-//                                FeatureGraph.Read(
-//                                    title = article.title,
-//                                    author = article.author,
-//                                    date = article.date,
-//                                    content = article.content
-//                                )
-//                            )
-//                        },
-//                        modifier = modifier
-//                    )
-//                }
                 composable<History> {
-                    HistoryScreen()
+                    HistoryScreen(modifier = modifier)
                 }
                 composable<Setting> {
                     SettingScreen(

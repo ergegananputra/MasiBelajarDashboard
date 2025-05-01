@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,76 +56,65 @@ private fun HistoryScreenDeveloperPreview() {
         HistoryScreen()
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistoryScreen(
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "History",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBackIosNew, contentDescription = null)
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Smart Setting",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "View past activities and stay updated on your security",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Spacer(modifier = Modifier.height(28.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "View past activities and stay updated on your security",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+                text = "Saturday, 28/04/2025",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
             )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Saturday, 28/04/2025",
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(Icons.Default.DateRange, contentDescription = null)
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            HistoryItem(
-                icon = Icons.Default.DirectionsRun,
-                description = "Fall Accident",
-                time = "12:10:00",
-                color = MaterialTheme.colorScheme.error
-            )
-            HistoryItem(
-                icon = Icons.Default.Person,
-                description = "Non-Toddler id #229 leaving the safezone area",
-                time = "12:10:00",
-                color = Color.Black
-            )
-            HistoryItem(
-                icon = Icons.Default.ChildCare,
-                description = "Toddler id #321 has been detected inside the safezone more than specific time",
-                time = "12:00:00",
-                color = MaterialTheme.colorScheme.error
+            Icon(
+                imageVector = Icons.Default.DateRange,
+                contentDescription = null,
             )
         }
+
+        Spacer(Modifier.height(12.dp))
+
+        HistoryItem(
+            icon = Icons.Default.DirectionsRun,
+            description = "Fall Accident",
+            time = "12:10:00",
+            color = MaterialTheme.colorScheme.error
+        )
+        HistoryItem(
+            icon = Icons.Default.Person,
+            description = "Non-Toddler id #229 leaving the safezone area",
+            time = "12:10:00",
+            color = Color.Black
+        )
+        HistoryItem(
+            icon = Icons.Default.ChildCare,
+            description = "Toddler id #321 has been detected inside the safezone more than specific time",
+            time = "12:00:00",
+            color = MaterialTheme.colorScheme.error
+        )
     }
 }
 
@@ -144,14 +135,13 @@ fun HistoryItem(
             contentDescription = null,
             tint = color,
             modifier = Modifier
-                .size(24.dp)
                 .padding(end = 12.dp)
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = description,
                 color = color,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.labelLarge
             )
             Text(
                 text = time,
