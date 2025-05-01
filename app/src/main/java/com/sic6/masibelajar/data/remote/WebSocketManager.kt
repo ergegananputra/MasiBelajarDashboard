@@ -1,6 +1,7 @@
 package com.sic6.masibelajar.data.remote
 
 import android.util.Log
+import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.domain.entities.VideoStreamResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,8 +35,9 @@ class WebSocketManager(
         webSocket = client.newWebSocket(request, this)
     }
 
-    fun send(message: String) {
-        webSocket?.send(message)
+    fun send(message: VideoStreamRequest) {
+        Log.d("websocket", "send: $message")
+        webSocket?.send(Json.encodeToString(message))
     }
 
     fun disconnect() {
@@ -44,16 +46,19 @@ class WebSocketManager(
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         coroutineScope.launch {
+            Log.d("websocket", "response: $text")
             try {
                 val parsed = jsonParser.decodeFromString<VideoStreamResponse>(text)
                 _messages.emit(parsed)
             } catch (e: Exception) {
                 Log.e("websocket", e.message ?: "Unknown error")
+                disconnect()
             }
         }
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         Log.e("websocket", t.message ?: "Unknown error")
+        disconnect()
     }
 }

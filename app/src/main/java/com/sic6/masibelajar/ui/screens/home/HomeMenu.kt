@@ -2,6 +2,7 @@ package com.sic6.masibelajar.ui.screens.home
 
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,6 +48,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.domain.entities.VideoStreamRequest
+import com.sic6.masibelajar.ui.components.Base64Image
 import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
@@ -54,13 +58,13 @@ import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
     showSystemUi = true,
     showBackground = true,
 )
-
 @Composable
 private fun HomeScreenDeveloperPreview() {
     MasiBelajarDashboardTheme {
         HomeScreen(viewModel = viewModel(), navController = rememberNavController())
     }
 }
+
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -72,6 +76,24 @@ fun HomeScreen(
         R.mipmap.ic_lokari_2,
         R.mipmap.ic_lokari_3,
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.send(
+            VideoStreamRequest(
+                id = "stream_3",
+                points = listOf(
+                    listOf(0, 0),
+                    listOf(0, 2),
+                    listOf(2, 2),
+                    listOf(2, 0)
+                ),
+                url = "http://192.168.137.209:81/stream",
+                time_threshold = 30,
+                preview = true,
+                track = true
+            )
+        )
+    }
 
     Column(
         modifier = modifier
@@ -109,35 +131,35 @@ fun HomeScreen(
         }
 
         // Video View Placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(12.dp))
-                .clip(RoundedCornerShape(8.dp))
-        ) {
-            // Here you can add your Video Streaming
-            Text(
-                text = "CAM 1",
-                modifier = Modifier.padding(8.dp)
-            )
-        }
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(200.dp)
+//                .background(MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(12.dp))
+//                .clip(RoundedCornerShape(8.dp))
+//        ) {
+//            // Here you can add your Video Streaming
+//            Text(
+//                text = "CAM 1",
+//                modifier = Modifier.padding(8.dp)
+//            )
+//        }
 
-//            response?.let { data ->
-//                Log.d("websocket", data.results.toString())
+            response?.let { res ->
+                Log.d("websocket", res.data.results.toString())
 
-//                Base64Image(
-//                    base64String = "data.frame",
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(200.dp)
-//                        .clip(RoundedCornerShape(8.dp))
-//                )
+                Base64Image(
+                    base64String = res.data.frame,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Realtime {data.results.timestamp}",
+                text = "Realtime ${res.data.results.timestamp}",
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -161,10 +183,10 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                VisitorCard(title = "Adult Visitor", count = 1, modifier = Modifier.weight(1f))
-                VisitorCard(title = "Toddler Visitor", count = 1, modifier = Modifier.weight(1f))
+                VisitorCard(title = "Adult Visitor", count = res.data.results.counts.non_toddler, modifier = Modifier.weight(1f))
+                VisitorCard(title = "Toddler Visitor", count = res.data.results.counts.toddler, modifier = Modifier.weight(1f))
             }
-//            }
+            }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -172,20 +194,6 @@ fun HomeScreen(
             // TODO: Handle Add User
         }
 
-    }
-}
-
-@Composable
-fun Base64Image(base64String: String, modifier: Modifier = Modifier) {
-    val imageBytes = Base64.decode(base64String, Base64.DEFAULT)
-    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    bitmap?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentDescription = null,
-            modifier = modifier,
-            contentScale = ContentScale.Crop
-        )
     }
 }
 
