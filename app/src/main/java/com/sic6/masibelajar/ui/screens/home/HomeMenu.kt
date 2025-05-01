@@ -1,5 +1,7 @@
 package com.sic6.masibelajar.ui.screens.home
 
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,54 +13,41 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.outlined.BrowseGallery
-import androidx.compose.material.icons.outlined.Fullscreen
-import androidx.compose.material.icons.outlined.HideImage
-import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.PhotoCamera
-import androidx.compose.material.icons.outlined.ScreenshotMonitor
-import androidx.compose.material.icons.outlined.SlowMotionVideo
-import androidx.compose.material.icons.outlined.Videocam
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.SlowMotionVideo
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
-import com.sic6.masibelajar.ui.navigation.graphs.FeatureGraph
-import com.sic6.masibelajar.ui.screens.components.CircleBackground
-import com.sic6.masibelajar.ui.screens.monitoring.components.MenuButton
+import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
-import com.sic6.masibelajar.ui.theme.interFontFamily
 
 @Preview(
     name = "Light Mode",
@@ -69,60 +58,86 @@ import com.sic6.masibelajar.ui.theme.interFontFamily
 @Composable
 private fun HomeScreenDeveloperPreview() {
     MasiBelajarDashboardTheme {
-        HomeScreen(rememberNavController())
+        HomeScreen(viewModel = viewModel(), navController = rememberNavController())
     }
 }
 @Composable
-fun HomeScreen(    navController: NavHostController,
-                   modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WebSocketViewModel = viewModel(),
+    navController: NavHostController,
+) {
+    val response by viewModel.response.collectAsState()
     val sharedUsers = listOf(
         R.mipmap.ic_lokari_2,
         R.mipmap.ic_lokari_3,
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Title
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+                .padding(top = 4.dp, bottom = 16.dp)
+                .fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.height(80.dp))
-
-            // Title
-            Text(text = "You now watch,", style = MaterialTheme.typography.labelLarge)
-            Text(
-                text = "Restroom DTEDI Lt.2",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Video View Placeholder
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(12.dp))
-            ) {
-                // Here you can add your Video Streaming
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                ) {
-                    Text(
-                        text = "CAM 1",
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+            Column {
+                Text(
+                    text = "Now watching",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.outline
+                )
+                Text(
+                    text = "Restroom DTEDI Lt.2",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
             }
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = "info",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+
+        // Video View Placeholder
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(8.dp))
+        ) {
+            // Here you can add your Video Streaming
+            Text(
+                text = "CAM 1",
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
+//            response?.let { data ->
+//                Log.d("websocket", data.results.toString())
+
+//                Base64Image(
+//                    base64String = "data.frame",
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(200.dp)
+//                        .clip(RoundedCornerShape(8.dp))
+//                )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Realtime 12:12:00",
+                text = "Realtime {data.results.timestamp}",
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -131,47 +146,60 @@ fun HomeScreen(    navController: NavHostController,
 
             // Button actions
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                ActionButton(title = "Full Screen", icon = Icons.Default.Fullscreen)
-                ActionButton(title = "Screenshot", icon = Icons.Default.CameraAlt)
-                ActionButton(title = "Playback", icon = Icons.Default.PlayArrow)
+                ActionButton(title = "Fullscreen", icon = Icons.Default.Fullscreen, modifier = Modifier.weight(1f))
+                ActionButton(title = "Screenshot", icon = Icons.Outlined.CameraAlt, modifier = Modifier.weight(1f))
+                ActionButton(title = "Playback", icon = Icons.Default.SlowMotionVideo, modifier = Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Visitor Counts
             Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                VisitorCard(title = "Adult Visitor", count = 2)
-                VisitorCard(title = "Toddler Visitor", count = 4)
+                VisitorCard(title = "Adult Visitor", count = 1, modifier = Modifier.weight(1f))
+                VisitorCard(title = "Toddler Visitor", count = 1, modifier = Modifier.weight(1f))
             }
+//            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            SharedUsersSection(sharedUsers = sharedUsers) {
-                // TODO: Handle Add User
-            }
-
+        SharedUsersSection(sharedUsers = sharedUsers) {
+            // TODO: Handle Add User
         }
+
     }
 }
 
 @Composable
-fun ActionButton(title: String, icon: ImageVector) {
+fun Base64Image(base64String: String, modifier: Modifier = Modifier) {
+    val imageBytes = Base64.decode(base64String, Base64.DEFAULT)
+    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    bitmap?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentDescription = null,
+            modifier = modifier,
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+fun ActionButton(title: String, icon: ImageVector, modifier: Modifier = Modifier) {
     ElevatedButton(
         onClick = { /* TODO: Handle click */ },
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .size(width = 80.dp, height = 80.dp)
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp),
+        modifier = modifier
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 imageVector = icon,
@@ -179,32 +207,28 @@ fun ActionButton(title: String, icon: ImageVector) {
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = title,
-                fontSize = 10.sp,
-                maxLines = 1
-            )
+            Text(text = title)
         }
     }
 }
 
 @Composable
-fun VisitorCard(title: String, count: Int) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .padding(6.dp)
-            .size(width = 140.dp, height = 100.dp) // Ukuran dipaksa tetap
-            .background(
-                MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(16.dp)
+fun VisitorCard(title: String, count: Int, modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .padding(12.dp)
     ) {
-        Text(text = title, fontSize = 14.sp)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = count.toString(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = count.toString(), style = MaterialTheme.typography.headlineMedium)
+        }
     }
 }
 
@@ -214,8 +238,8 @@ fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(16.dp)
+                color = MaterialTheme.colorScheme.surfaceContainer,
+                shape = RoundedCornerShape(12.dp)
             )
             .padding(16.dp)
     ) {
@@ -233,7 +257,8 @@ fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
         ) {
             Row(
                 modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
+//                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(-8.dp)
             ) {
                 sharedUsers.forEach {
                     Image(
@@ -242,7 +267,7 @@ fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(Color.LightGray)
+                            .background(MaterialTheme.colorScheme.surface)
                             .padding(end = 8.dp)
                     )
                 }

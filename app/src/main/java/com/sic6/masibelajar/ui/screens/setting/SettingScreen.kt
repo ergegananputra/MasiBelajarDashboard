@@ -4,12 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -34,9 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.sic6.masibelajar.R
-import com.sic6.masibelajar.ui.screens.components.CircleBackground
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
 @Preview(
@@ -52,40 +48,35 @@ private fun SettingScreenDeveloperPreview() {
 
 @Composable
 fun SettingScreen(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-
-            SectionTitle(
-                title = "Profile",
-            )
-            ProfileSection()
-
-            SectionTitle(
-                title = "Account Settings",
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
-            )
-            SettingItem(icon = Icons.Outlined.Person, title = "Account") { }
-            SettingItem(icon = Icons.Outlined.WorkOutline, title = "Password & Security") { }
-            SettingItem(icon = Icons.Outlined.Notifications, title = "Notification") { }
-            SettingItem(icon = Icons.Outlined.Translate, title = "Languages Preferences") { }
-
-            SectionTitle(
-                title = "Other",
-                modifier = Modifier.padding(top = 20.dp, bottom = 8.dp)
-            )
-            SettingItem(icon = Icons.AutoMirrored.Default.HelpOutline, title = "Help") { }
-            SettingItem(icon = Icons.AutoMirrored.Default.Logout, title = "Logout") { }
-        }
-
-        CircleBackground(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = 360.dp)
-                .zIndex(-1f)
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        Text(
+            text = "Settings",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 4.dp)
         )
+
+        SectionTitle(title = "Profile")
+        ProfileSection()
+
+        SectionTitle(
+            title = "Account Settings",
+            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+        )
+        SettingItem(icon = Icons.Outlined.Person, title = "Account") { }
+        SettingItem(icon = Icons.Outlined.WorkOutline, title = "Password & Security") { }
+        SettingItem(icon = Icons.Outlined.Notifications, title = "Notification") { }
+        SettingItem(icon = Icons.Outlined.Translate, title = "Languages Preferences") { }
+
+        SectionTitle(
+            title = "Other",
+            modifier = Modifier.padding(top = 20.dp, bottom = 8.dp)
+        )
+        SettingItem(icon = Icons.AutoMirrored.Default.HelpOutline, title = "Help") { }
+        SettingItem(icon = Icons.AutoMirrored.Default.Logout, title = "Logout") { }
     }
 }
 

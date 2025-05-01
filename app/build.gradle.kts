@@ -80,4 +80,7 @@ dependencies {
 
     // Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // Okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

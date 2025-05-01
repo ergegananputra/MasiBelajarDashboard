@@ -32,7 +32,6 @@ fun DashboardScreen(
 ) {
     val navController = rememberNavController()
     Scaffold(
-        topBar = { AppTopBar(navController) },
         bottomBar = { AppBottomNavigation(navController) },
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
