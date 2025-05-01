@@ -98,7 +98,7 @@ fun SignInScreen(
                     .align(Alignment.CenterHorizontally) // Pusatkan horizontal
             ) {
                 Image(
-                    painter = painterResource(id = R.mipmap.ic_lokari_2),
+                    painter = painterResource(id = R.mipmap.ic_lokari_3),
                     contentDescription = "Illustration",
                     modifier = Modifier
                         .size(200.dp) // Perbesar gambar bayi
