@@ -1,6 +1,7 @@
 package com.sic6.masibelajar.ui.screens.auth
 
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -61,13 +62,25 @@ private fun SignInScreenDeveloperPreview() {
     }
 }
 
-fun loginUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
-    if (password.length > 8) {
-        callback(Result.success(Unit))
-    } else {
-        callback(Result.failure(Exception("Password must be longer than 8 characters")))
+//fun loginUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
+//    if (password.length > 8) {
+//        callback(Result.success(Unit))
+//    } else {
+//        callback(Result.failure(Exception("Password must be longer than 8 characters")))
+//
+//    }
+//}
 
-    }
+fun loginUser(email: String, password: String, callback: (Result<Unit>) -> Unit) {
+    val auth = FirebaseAuth.getInstance()
+    auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                callback(Result.success(Unit))
+            } else {
+                callback(Result.failure(task.exception ?: Exception("Login failed")))
+            }
+        }
 }
 
 
@@ -182,6 +195,29 @@ fun SignInScreen(
 //                    Text("Log In")
 //                }
 
+//                val context = LocalContext.current
+//                Button(
+//                    onClick = {
+//                        loginUser(email, password) { result ->
+//                            result.onSuccess {
+//                                navController.navigate(FeatureGraph.Dashboard) {
+//                                    popUpTo(RootGraph.Auth) {
+//                                        inclusive = true
+//                                    }
+//                                }
+//                            }.onFailure { exception ->
+//                                // Misal: munculin Toast atau Snackbar error
+//                                println("Login failed: ${exception.message}")
+//                                Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    },
+//                    modifier = Modifier.fillMaxWidth(),
+//                    shape = RoundedCornerShape(8.dp)
+//                ){
+//                    Text("Log In")
+//                }
+
                 val context = LocalContext.current
                 Button(
                     onClick = {
@@ -193,7 +229,6 @@ fun SignInScreen(
                                     }
                                 }
                             }.onFailure { exception ->
-                                // Misal: munculin Toast atau Snackbar error
                                 println("Login failed: ${exception.message}")
                                 Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
                             }
@@ -201,9 +236,10 @@ fun SignInScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
-                ){
+                ) {
                     Text("Log In")
                 }
+
 
                 // Sign Up
                 Row(

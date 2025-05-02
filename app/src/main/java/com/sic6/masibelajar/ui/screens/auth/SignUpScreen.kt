@@ -1,6 +1,7 @@
 package com.sic6.masibelajar.ui.screens.auth
 
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,13 +61,25 @@ private fun SignUpScreenDeveloperPreview() {
     }
 }
 
-fun signUpUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
-    if (password.length > 8) {
-        callback(Result.success(Unit))
-    } else {
-        callback(Result.failure(Exception("Password must be longer than 8 characters")))
+//fun signUpUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
+//    if (password.length > 8) {
+//        callback(Result.success(Unit))
+//    } else {
+//        callback(Result.failure(Exception("Password must be longer than 8 characters")))
+//
+//    }
+//}
 
-    }
+fun signUpUser(email: String, password: String, callback: (Result<Unit>) -> Unit) {
+    val auth = FirebaseAuth.getInstance()
+    auth.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                callback(Result.success(Unit))
+            } else {
+                callback(Result.failure(task.exception ?: Exception("Unknown error")))
+            }
+        }
 }
 
 @Composable

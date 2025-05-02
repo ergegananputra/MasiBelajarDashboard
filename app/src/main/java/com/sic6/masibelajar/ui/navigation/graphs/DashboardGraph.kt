@@ -84,7 +84,8 @@ sealed class DashboardGraph {
                 }
                 composable<Setting> {
                     SettingScreen(
-                        modifier = modifier
+                        modifier = modifier,
+                        navController = navController,
                     )
                 }
             }

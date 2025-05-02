@@ -32,7 +32,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.navigation.graphs.RootGraph
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
 @Preview(
@@ -42,12 +46,13 @@ import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 @Composable
 private fun SettingScreenDeveloperPreview() {
     MasiBelajarDashboardTheme {
-        SettingScreen()
+        val navController = rememberNavController()
+        SettingScreen(navController = navController)
     }
 }
 
 @Composable
-fun SettingScreen(modifier: Modifier = Modifier) {
+fun SettingScreen(modifier: Modifier = Modifier, navController: NavController,) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -76,7 +81,18 @@ fun SettingScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 20.dp, bottom = 8.dp)
         )
         SettingItem(icon = Icons.AutoMirrored.Default.HelpOutline, title = "Help") { }
-        SettingItem(icon = Icons.AutoMirrored.Default.Logout, title = "Logout") { }
+//        SettingItem(icon = Icons.AutoMirrored.Default.Logout, title = "Logout") { }
+        SettingItem(
+            icon = Icons.AutoMirrored.Default.Logout,
+            title = "Logout"
+        ) {
+            FirebaseAuth.getInstance().signOut()
+            navController.navigate(RootGraph.Auth) {
+                popUpTo(RootGraph.Main) { inclusive = true }
+
+            }
+        }
+
     }
 }
 
