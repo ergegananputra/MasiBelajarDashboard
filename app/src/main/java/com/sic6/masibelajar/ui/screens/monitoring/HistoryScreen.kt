@@ -17,11 +17,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ChildCare
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -33,6 +35,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,9 +48,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.domain.enums.EventType
 import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.screens.monitoring.components.HistoryCard
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Preview(
     name = "Light Mode",
@@ -63,6 +70,8 @@ fun HistoryScreen(
     modifier: Modifier = Modifier,
     viewModel: WebSocketViewModel = viewModel()
 ) {
+    val history by viewModel.history.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -87,7 +96,7 @@ fun HistoryScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Saturday, 28/04/2025",
+                text = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.weight(1f)
             )
@@ -99,24 +108,21 @@ fun HistoryScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        HistoryItem(
-            icon = Icons.Default.DirectionsRun,
-            description = "Fall Accident",
-            time = "12:10:00",
-            color = MaterialTheme.colorScheme.error
-        )
-        HistoryItem(
-            icon = Icons.Default.Person,
-            description = "Non-Toddler id #229 leaving the safezone area",
-            time = "12:10:00",
-            color = Color.Black
-        )
-        HistoryItem(
-            icon = Icons.Default.ChildCare,
-            description = "Toddler id #321 has been detected inside the safezone more than specific time",
-            time = "12:00:00",
-            color = MaterialTheme.colorScheme.error
-        )
+        history.forEach { hist ->
+            HistoryItem(
+                icon = when (hist.type) {
+                    EventType.FALL -> Icons.AutoMirrored.Filled.DirectionsRun
+                    EventType.MISSING -> Icons.Default.QuestionMark
+                    else -> Icons.Default.Person
+                },
+                description = hist.name,
+                time = hist.time,
+                color = when (hist.type) {
+                    EventType.FALL, EventType.MISSING -> MaterialTheme.colorScheme.error
+                    else -> MaterialTheme.colorScheme.primary
+                }
+            )
+        }
     }
 }
 

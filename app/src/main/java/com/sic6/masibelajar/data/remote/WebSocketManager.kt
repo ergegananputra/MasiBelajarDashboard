@@ -33,6 +33,7 @@ class WebSocketManager(
             .url(url)
             .build()
         webSocket = client.newWebSocket(request, this)
+        Log.d("websocket", "connected to $url")
     }
 
     fun send(message: VideoStreamRequest) {
@@ -42,11 +43,12 @@ class WebSocketManager(
 
     fun disconnect() {
         webSocket?.close(1000, "Goodbye")
+        Log.d("websocket", "disconnected")
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         coroutineScope.launch {
-            Log.d("websocket", "response: $text")
+//            Log.d("websocket", "response: $text")
             try {
                 val parsed = jsonParser.decodeFromString<VideoStreamResponse>(text)
                 _messages.emit(parsed)

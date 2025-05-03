@@ -19,11 +19,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +40,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +51,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,9 +59,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
 import com.sic6.masibelajar.domain.entities.VideoStreamRequest
+import com.sic6.masibelajar.domain.enums.EventType
 import com.sic6.masibelajar.ui.components.Base64Image
 import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
+import kotlinx.coroutines.delay
 
 @Preview(
     name = "Light Mode",
@@ -76,22 +88,43 @@ fun HomeScreen(
         R.mipmap.ic_lokari_2,
         R.mipmap.ic_lokari_3,
     )
+    val activeWarning = remember { mutableStateOf(EventType.SAFEZONE_ENTER) }
 
     LaunchedEffect(Unit) {
         viewModel.send(
             VideoStreamRequest(
                 id = "stream_3",
                 points = listOf(
-                    listOf(0, 0),
-                    listOf(0, 2),
-                    listOf(2, 2),
-                    listOf(2, 0)
+                    listOf(696, 210),
+                    listOf(1200, 130),
+                    listOf(1166, 716),
+                    listOf(1009, 718),
+                    listOf(705, 567)
                 ),
-                url = "http://192.168.137.209:81/stream",
-                time_threshold = 30,
+//                url = "storages/sample/Stream.mp4",
+                url = "test/data/Fall.mp4",
+                time_threshold = 5,
                 preview = true,
                 track = true
             )
+        )
+    }
+
+    if (activeWarning.value == EventType.FALL) {
+        AlertDialogComponent(
+            title = "URGENT!",
+            body = "Fall detected! Please check immediately!",
+            icon = Icons.AutoMirrored.Filled.DirectionsRun,
+            confirmText = "Exit",
+            onDismissRequest = { activeWarning.value = EventType.NONE }
+        )
+    } else if (activeWarning.value == EventType.MISSING) {
+        AlertDialogComponent(
+            title = "WARNING!",
+            body = "Person detected in the Safezone for an extended time",
+            icon = Icons.Rounded.Error,
+            confirmText = "Exit",
+            onDismissRequest = { activeWarning.value = EventType.NONE }
         )
     }
 
@@ -145,16 +178,21 @@ fun HomeScreen(
 //            )
 //        }
 
-            response?.let { res ->
-                Log.d("websocket", res.data.results.toString())
+        response?.let { res ->
 
-                Base64Image(
-                    base64String = res.data.frame,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
+            if (res.data.results.fall) {
+                activeWarning.value = EventType.FALL
+            } else if (res.data.results.is_there_something_wrong == true) {
+                activeWarning.value = EventType.MISSING
+            }
+
+            Base64Image(
+                base64String = res.data.frame,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -186,7 +224,7 @@ fun HomeScreen(
                 VisitorCard(title = "Adult Visitor", count = res.data.results.counts.non_toddler, modifier = Modifier.weight(1f))
                 VisitorCard(title = "Toddler Visitor", count = res.data.results.counts.toddler, modifier = Modifier.weight(1f))
             }
-            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -294,4 +332,50 @@ fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+fun AlertDialogComponent(
+    title: String,
+    body: String,
+    icon: ImageVector,
+    confirmText: String,
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(40.dp)
+            )
+        },
+        title = {
+            Text(
+                text = title,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        text = {
+            Text(
+                text = body,
+                textAlign = TextAlign.Center,
+            )
+        },
+        onDismissRequest = { onDismissRequest() },
+        confirmButton = {
+            Button(
+                onClick = { onDismissRequest() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = confirmText)
+            }
+        }
+    )
 }
