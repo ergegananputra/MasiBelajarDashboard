@@ -48,7 +48,7 @@ class WebSocketManager(
 
     override fun onMessage(webSocket: WebSocket, text: String) {
         coroutineScope.launch {
-//            Log.d("websocket", "response: $text")
+            Log.d("websocket", "response: $text")
             try {
                 val parsed = jsonParser.decodeFromString<VideoStreamResponse>(text)
                 _messages.emit(parsed)

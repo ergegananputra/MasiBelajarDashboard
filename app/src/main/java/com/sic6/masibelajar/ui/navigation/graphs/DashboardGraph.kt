@@ -6,7 +6,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
+import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
 import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.HistoryScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
@@ -43,7 +43,7 @@ sealed class DashboardGraph {
             parentNavController: NavHostController,
 //            eventHandler : (DashboardGraph) -> Unit,
             modifier: Modifier = Modifier,
-            viewModel: WebSocketViewModel = viewModel()
+            viewModel: VideoStreamViewModel = viewModel()
         ) {
             NavHost(
                 navController = navController,
@@ -65,14 +65,14 @@ sealed class DashboardGraph {
                 composable<Camera> {
                     CameraScreen(
                         navController = navController,
-                        webSocketViewModel = viewModel,
+                        videoStreamViewModel = viewModel,
                         modifier = modifier
                     )
                 }
                 composable<Alarm> {
                     AlarmScreen(
                         navController = navController,
-                        viewModel = viewModel,
+                        videoStreamViewModel = viewModel,
                         modifier = modifier
                     )
                 }

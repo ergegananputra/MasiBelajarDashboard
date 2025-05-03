@@ -48,7 +48,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
-import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
+import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
+import com.sic6.masibelajar.ui.screens.smart.camera.CameraViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 
 @Preview(showBackground = true)
@@ -62,7 +63,8 @@ private fun AlarmScreenPreview() {
 fun AlarmScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: WebSocketViewModel = viewModel()
+    videoStreamViewModel: VideoStreamViewModel = viewModel(),
+    cameraViewModel: CameraViewModel = viewModel()
 ) {
     var waitTime by remember { mutableStateOf("3000") }
     var fallDetection by remember { mutableStateOf(false) }

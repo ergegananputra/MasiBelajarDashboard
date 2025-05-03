@@ -8,8 +8,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CameraViewModel : ViewModel() {
-    private val _state = MutableStateFlow(CameraScreenState())
+    private val _state = MutableStateFlow(
+        CameraScreenState(
+//            ipCamera = "storages/sample/Stream2.mp4",
+            ipCamera = "http://192.168.137.213:81/stream",
+            points = listOf(
+                Point(0, 787, 955),
+                Point(1, 384,1047),
+                Point(2, 365, 65),
+                Point(3, 787, 49)
+            )
+        )
+    )
     val state = _state.asStateFlow()
+
+    init {
+
+    }
 
     fun setIpCamera(ipCamera: String) {
         _state.update { it.copy(ipCamera = ipCamera) }

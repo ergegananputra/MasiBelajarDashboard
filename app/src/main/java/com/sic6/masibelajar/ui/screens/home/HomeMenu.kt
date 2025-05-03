@@ -1,8 +1,5 @@
 package com.sic6.masibelajar.ui.screens.home
 
-import android.graphics.BitmapFactory
-import android.util.Base64
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,13 +18,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.rounded.Error
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,9 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -61,9 +54,9 @@ import com.sic6.masibelajar.R
 import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.domain.enums.EventType
 import com.sic6.masibelajar.ui.components.Base64Image
-import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
+import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
+import com.sic6.masibelajar.ui.screens.smart.camera.Point
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
-import kotlinx.coroutines.delay
 
 @Preview(
     name = "Light Mode",
@@ -80,7 +73,7 @@ private fun HomeScreenDeveloperPreview() {
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: WebSocketViewModel = viewModel(),
+    viewModel: VideoStreamViewModel = viewModel(),
     navController: NavHostController,
 ) {
     val response by viewModel.response.collectAsState()
@@ -88,21 +81,22 @@ fun HomeScreen(
         R.mipmap.ic_lokari_2,
         R.mipmap.ic_lokari_3,
     )
-    val activeWarning = remember { mutableStateOf(EventType.SAFEZONE_ENTER) }
+    val activeWarning = remember { mutableStateOf(EventType.NONE) }
+    val isDialogOpen = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.send(
             VideoStreamRequest(
                 id = "stream_3",
                 points = listOf(
-                    listOf(696, 210),
-                    listOf(1200, 130),
-                    listOf(1166, 716),
-                    listOf(1009, 718),
-                    listOf(705, 567)
+                    listOf(787, 955),
+                    listOf(384,1047),
+                    listOf(365, 65),
+                    listOf(787, 49)
                 ),
-//                url = "storages/sample/Stream.mp4",
-                url = "test/data/Fall.mp4",
+//                url = "http://192.168.137.213:81/stream",
+                url = "storages/sample/Stream2.mp4",
+//                url = "test/data/Fall.mp4",
                 time_threshold = 5,
                 preview = true,
                 track = true
@@ -110,21 +104,27 @@ fun HomeScreen(
         )
     }
 
-    if (activeWarning.value == EventType.FALL) {
+    if (activeWarning.value == EventType.FALL && !isDialogOpen.value) {
         AlertDialogComponent(
             title = "URGENT!",
             body = "Fall detected! Please check immediately!",
             icon = Icons.AutoMirrored.Filled.DirectionsRun,
             confirmText = "Exit",
-            onDismissRequest = { activeWarning.value = EventType.NONE }
+            onDismissRequest = {
+                activeWarning.value = EventType.NONE
+                isDialogOpen.value = true
+            }
         )
-    } else if (activeWarning.value == EventType.MISSING) {
+    } else if (activeWarning.value == EventType.MISSING && !isDialogOpen.value) {
         AlertDialogComponent(
             title = "WARNING!",
             body = "Person detected in the Safezone for an extended time",
             icon = Icons.Rounded.Error,
             confirmText = "Exit",
-            onDismissRequest = { activeWarning.value = EventType.NONE }
+            onDismissRequest = {
+                activeWarning.value = EventType.NONE
+                isDialogOpen.value = true
+            }
         )
     }
 

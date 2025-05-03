@@ -1,24 +1,26 @@
 package com.sic6.masibelajar.ui.screens.smart.camera
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.VideocamOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,8 +28,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,15 +39,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.ui.components.Base64Image
-import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
+import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 
 @Preview(showBackground = true)
@@ -59,13 +66,13 @@ private fun CameraScreenPreview() {
 fun CameraScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    webSocketViewModel: WebSocketViewModel = viewModel(),
-    viewModel: CameraViewModel = viewModel()
+    videoStreamViewModel: VideoStreamViewModel = viewModel(),
+    cameraViewModel: CameraViewModel = viewModel()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val response by webSocketViewModel.response.collectAsState()
-
+    val state by cameraViewModel.state.collectAsStateWithLifecycle()
+    val response by videoStreamViewModel.response.collectAsState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -83,7 +90,21 @@ fun CameraScreen(
                 },
                 actions = {
                     Button(
-                        onClick = { /* Save action */ },
+                        onClick = {
+                            videoStreamViewModel.send(
+                                VideoStreamRequest(
+                                    id = "stream",
+                                    points = cameraViewModel.state.value.points.map { point ->
+                                        listOf(point.x, point.y)
+                                    },
+                                    preview = true,
+                                    time_threshold = 30,
+                                    track = true,
+                                    url = cameraViewModel.state.value.ipCamera
+                                )
+                            )
+                            Toast.makeText(context, "Configuration saved", Toast.LENGTH_SHORT).show()
+                        },
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.padding(end = 8.dp)
                     ) {
@@ -104,7 +125,7 @@ fun CameraScreen(
             LabeledTextField(
                 label = "IP Camera Input",
                 value = state.ipCamera,
-                onValueChange = viewModel::setIpCamera,
+                onValueChange = cameraViewModel::setIpCamera,
                 modifier = Modifier.fillMaxWidth()
             )
             Column {
@@ -149,14 +170,51 @@ fun CameraScreen(
                     }
                 }
             }
-            LabeledTextField(
-                label = "Number of Points (Minimum 3)",
-                value = state.numberOfPoints.toString(),
-                onValueChange = viewModel::setPoint,
-                modifier = Modifier
-                    .fillMaxWidth() // accept only numbers
-
-            )
+            Column {
+                Text(
+                    text = "Number of Points (Minimum 3)",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = { cameraViewModel.setPoint((state.numberOfPoints - 1).toString()) },
+                        contentPadding = PaddingValues(0.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = "Remove a point"
+                        )
+                    }
+                    OutlinedTextField(
+                        value = state.numberOfPoints.toString(),
+                        onValueChange = cameraViewModel::setPoint,
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal
+                        ),
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Button(
+                        onClick = { cameraViewModel.setPoint((state.numberOfPoints + 1).toString()) },
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add a point"
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Adjust Points",
@@ -170,7 +228,7 @@ fun CameraScreen(
                         label = "X Position",
                         value = point.x.toString(),
                         onValueChange = {
-                            viewModel.setPointX(
+                            cameraViewModel.setPointX(
                                 point.id,
                                 it.toIntOrNull() ?: 0
                             )
@@ -181,7 +239,7 @@ fun CameraScreen(
                         label = "Y Position",
                         value = point.y.toString(),
                         onValueChange = {
-                            viewModel.setPointY(
+                            cameraViewModel.setPointY(
                                 point.id,
                                 it.toIntOrNull() ?: 0
                             )
