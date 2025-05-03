@@ -1,24 +1,24 @@
-package com.sic6.masibelajar.ui.screens.smart
+package com.sic6.masibelajar.ui.screens.smart.camera
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.VideocamOff
 import androidx.compose.material.icons.outlined.VideocamOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,19 +32,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.ui.components.Base64Image
 import com.sic6.masibelajar.ui.screens.dashboard.WebSocketViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
@@ -52,7 +49,9 @@ import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 @Preview(showBackground = true)
 @Composable
 private fun CameraScreenPreview() {
-    CameraScreen(rememberNavController())
+    CameraScreen(
+        navController = rememberNavController()
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,20 +59,12 @@ private fun CameraScreenPreview() {
 fun CameraScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: WebSocketViewModel = viewModel()
+    webSocketViewModel: WebSocketViewModel = viewModel(),
+    viewModel: CameraViewModel = viewModel()
 ) {
-    val response by viewModel.response.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val response by webSocketViewModel.response.collectAsState()
 
-    var ipCamera by remember { mutableStateOf("192.1681.001") }
-    var numberOfPoints by remember { mutableStateOf("4") }
-    var point1X by remember { mutableStateOf("4") }
-    var point1Y by remember { mutableStateOf("4") }
-    var point2X by remember { mutableStateOf("") }
-    var point2Y by remember { mutableStateOf("") }
-    var point3X by remember { mutableStateOf("") }
-    var point3Y by remember { mutableStateOf("") }
-    var point4X by remember { mutableStateOf("") }
-    var point4Y by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -112,8 +103,8 @@ fun CameraScreen(
         ) {
             LabeledTextField(
                 label = "IP Camera Input",
-                value = ipCamera,
-                onValueChange = { ipCamera = it },
+                value = state.ipCamera,
+                onValueChange = viewModel::setIpCamera,
                 modifier = Modifier.fillMaxWidth()
             )
             Column {
@@ -160,9 +151,11 @@ fun CameraScreen(
             }
             LabeledTextField(
                 label = "Number of Points (Minimum 3)",
-                value = numberOfPoints,
-                onValueChange = { numberOfPoints = it },
-                modifier = Modifier.fillMaxWidth()
+                value = state.numberOfPoints.toString(),
+                onValueChange = viewModel::setPoint,
+                modifier = Modifier
+                    .fillMaxWidth() // accept only numbers
+
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -170,62 +163,34 @@ fun CameraScreen(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Medium
             )
-            PositionTextField(title = "Point 1") {
-                LabeledTextField(
-                    label = "X Position",
-                    value = point1X,
-                    onValueChange = { point1X = it },
-                    modifier = Modifier.weight(1f)
-                )
-                LabeledTextField(
-                    label = "Y Position",
-                    value = point1Y,
-                    onValueChange = { point1Y = it },
-                    modifier = Modifier.weight(1f),
-                )
+
+            state.points.forEach { point ->
+                PositionTextField(title = "Point ${point.id}") {
+                    LabeledTextField(
+                        label = "X Position",
+                        value = point.x.toString(),
+                        onValueChange = {
+                            viewModel.setPointX(
+                                point.id,
+                                it.toIntOrNull() ?: 0
+                            )
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                    LabeledTextField(
+                        label = "Y Position",
+                        value = point.y.toString(),
+                        onValueChange = {
+                            viewModel.setPointY(
+                                point.id,
+                                it.toIntOrNull() ?: 0
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
-            PositionTextField(title = "Point 2") {
-                LabeledTextField(
-                    label = "X Position",
-                    value = point2X,
-                    onValueChange = { point2X = it },
-                    modifier = Modifier.weight(1f)
-                )
-                LabeledTextField(
-                    label = "Y Position",
-                    value = point2Y,
-                    onValueChange = { point2Y = it },
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            PositionTextField(title = "Point 3") {
-                LabeledTextField(
-                    label = "X Position",
-                    value = point3X,
-                    onValueChange = { point3X = it },
-                    modifier = Modifier.weight(1f)
-                )
-                LabeledTextField(
-                    label = "Y Position",
-                    value = point3Y,
-                    onValueChange = { point3Y = it },
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            PositionTextField(title = "Point 4") {
-                LabeledTextField(
-                    label = "X Position",
-                    value = point4X,
-                    onValueChange = { point4X = it },
-                    modifier = Modifier.weight(1f)
-                )
-                LabeledTextField(
-                    label = "Y Position",
-                    value = point4Y,
-                    onValueChange = { point4Y = it },
-                    modifier = Modifier.weight(1f),
-                )
-            }
+
             Spacer(modifier = Modifier.height(100.dp))
         }
     }

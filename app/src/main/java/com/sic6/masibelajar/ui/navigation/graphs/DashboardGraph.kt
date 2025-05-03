@@ -11,7 +11,7 @@ import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.HistoryScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
 import com.sic6.masibelajar.ui.screens.smart.AlarmScreen
-import com.sic6.masibelajar.ui.screens.smart.CameraScreen
+import com.sic6.masibelajar.ui.screens.smart.camera.CameraScreen
 import com.sic6.masibelajar.ui.screens.smart.SmartSettingScreen
 import kotlinx.serialization.Serializable
 
@@ -65,7 +65,7 @@ sealed class DashboardGraph {
                 composable<Camera> {
                     CameraScreen(
                         navController = navController,
-                        viewModel = viewModel,
+                        webSocketViewModel = viewModel,
                         modifier = modifier
                     )
                 }
