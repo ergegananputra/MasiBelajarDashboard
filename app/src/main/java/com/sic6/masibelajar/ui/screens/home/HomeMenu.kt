@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -228,8 +229,23 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        SharedUsersSection(sharedUsers = sharedUsers) {
-            // TODO: Handle Add User
+        // Tambahkan ini di dalam HomeScreen composable
+        val sharedUserEmails = remember { mutableStateListOf<String>() }
+        val showDialog = remember { mutableStateOf(false) }
+
+// Shared User Section
+        SharedUsersSection(sharedUsers = sharedUserEmails) {
+            showDialog.value = true
+        }
+
+        if (showDialog.value) {
+            AddUserDialog(
+                onDismiss = { showDialog.value = false },
+                onAddUserSuccess = { username, email ->
+                    sharedUserEmails.add(email)
+                    showDialog.value = false
+                }
+            )
         }
 
     }
@@ -279,7 +295,7 @@ fun VisitorCard(title: String, count: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
+fun SharedUsersSection(sharedUsers: List<String>, onAddUser: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -303,19 +319,23 @@ fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
         ) {
             Row(
                 modifier = Modifier.weight(1f),
-//                verticalAlignment = Alignment.CenterVertically
                 horizontalArrangement = Arrangement.spacedBy(-8.dp)
             ) {
-                sharedUsers.forEach {
-                    Image(
-                        painter = painterResource(id = it),
-                        contentDescription = null,
+                sharedUsers.forEach { email ->
+                    Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(end = 8.dp)
-                    )
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = email.first().uppercase(),
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
             IconButton(
@@ -333,6 +353,7 @@ fun SharedUsersSection(sharedUsers: List<Int>, onAddUser: () -> Unit) {
         }
     }
 }
+
 
 @Composable
 fun AlertDialogComponent(
@@ -379,3 +400,48 @@ fun AlertDialogComponent(
         }
     )
 }
+
+@Composable
+fun AddUserDialog(
+    onDismiss: () -> Unit,
+    onAddUserSuccess: (username: String, email: String) -> Unit
+) {
+    val emailState = remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Add Shared User")
+        },
+        text = {
+            Column {
+                Text(text = "Enter user email:")
+                androidx.compose.material3.OutlinedTextField(
+                    value = emailState.value,
+                    onValueChange = { emailState.value = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val email = emailState.value
+                    if (email.isNotBlank()) {
+                        onAddUserSuccess(email.substringBefore("@"), email)
+                    }
+                }
+            ) {
+                Text("Add")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+
