@@ -217,6 +217,16 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Inside
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                VisitorCard(title = "People Inside", count = res.data.results.counts.inside, modifier = Modifier.weight(1f))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Visitor Counts
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

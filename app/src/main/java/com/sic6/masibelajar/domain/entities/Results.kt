@@ -9,5 +9,5 @@ data class Results(
     val id: String? = null,
     val is_there_something_wrong: Boolean? = null,
     val out_of_safezone: Boolean,
-    val timestamp: String
+    val timestamp: String,
 )
