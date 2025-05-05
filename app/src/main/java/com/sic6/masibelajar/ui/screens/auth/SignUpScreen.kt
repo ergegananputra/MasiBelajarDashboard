@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
@@ -61,29 +63,11 @@ private fun SignUpScreenDeveloperPreview() {
     }
 }
 
-//fun signUpUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
-//    if (password.length > 8) {
-//        callback(Result.success(Unit))
-//    } else {
-//        callback(Result.failure(Exception("Password must be longer than 8 characters")))
-//
-//    }
-//}
-
-fun signUpUser(email: String, password: String, callback: (Result<Unit>) -> Unit) {
-    val auth = FirebaseAuth.getInstance()
-    auth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                callback(Result.success(Unit))
-            } else {
-                callback(Result.failure(task.exception ?: Exception("Unknown error")))
-            }
-        }
-}
-
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen(
+    navController: NavController,
+    viewModel: UserViewModel = hiltViewModel()
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -100,20 +84,19 @@ fun SignUpScreen(navController: NavController) {
         ) {
 
             Spacer(modifier = Modifier.height(60.dp))
-            // Box untuk mengatur posisi gambar bayi
             Box(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally) // Pusatkan horizontal
+                    .align(Alignment.CenterHorizontally)
             ) {
                 Image(
                     painter = painterResource(id = R.mipmap.ic_lokari_3),
-                    contentDescription = "Illustration",
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(200.dp) // Perbesar gambar bayi
+                        .size(140.dp)
                         .align(Alignment.Center)
-//                        .offset(y = (-100).dp) // Geser ke bawah agar proporsional
                 )
             }
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Nice To Meet You!",
                 fontSize = 22.sp,
@@ -182,7 +165,7 @@ fun SignUpScreen(navController: NavController) {
                 val context = LocalContext.current
                 Button(
                     onClick = {
-                        signUpUser(email, password) { result ->
+                        viewModel.signUpUser(email, password) { result ->
                             result.onSuccess {
                                 navController.navigate(FeatureGraph.Dashboard) {
                                     popUpTo(RootGraph.Auth) {
@@ -216,10 +199,14 @@ fun SignUpScreen(navController: NavController) {
             }
         }
 
-        CircleBackground(
+        Image(
+            painter = painterResource(R.drawable.foreground),
+            contentDescription = null,
             modifier = Modifier
+                .aspectRatio(2f / 1f)
+                .fillMaxSize()
                 .align(Alignment.BottomCenter)
-                .offset(y = 328.dp)
+                .offset(y = 16.dp)
                 .zIndex(-1f)
         )
     }

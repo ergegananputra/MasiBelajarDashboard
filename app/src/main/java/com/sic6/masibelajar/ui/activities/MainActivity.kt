@@ -8,7 +8,9 @@ import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.ui.navigation.graphs.RootGraph
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

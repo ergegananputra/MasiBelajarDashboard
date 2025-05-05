@@ -3,11 +3,13 @@ package com.sic6.masibelajar.ui.screens.auth
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
@@ -62,39 +66,18 @@ private fun SignInScreenDeveloperPreview() {
     }
 }
 
-//fun loginUser(username: String, password: String, callback: (Result<Unit>) -> Unit) {
-//    if (password.length > 8) {
-//        callback(Result.success(Unit))
-//    } else {
-//        callback(Result.failure(Exception("Password must be longer than 8 characters")))
-//
-//    }
-//}
-
-fun loginUser(email: String, password: String, callback: (Result<Unit>) -> Unit) {
-    val auth = FirebaseAuth.getInstance()
-    auth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                callback(Result.success(Unit))
-            } else {
-                callback(Result.failure(task.exception ?: Exception("Login failed")))
-            }
-        }
-}
-
-
 @Composable
 fun SignInScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: UserViewModel = hiltViewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -105,20 +88,20 @@ fun SignInScreen(
         ) {
 
             Spacer(modifier = Modifier.height(60.dp))
-            // Box untuk mengatur posisi gambar bayi
             Box(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally) // Pusatkan horizontal
+                    .align(Alignment.CenterHorizontally)
             ) {
                 Image(
                     painter = painterResource(id = R.mipmap.ic_lokari_3),
-                    contentDescription = "Illustration",
+                    contentDescription = null,
                     modifier = Modifier
-                        .size(200.dp) // Perbesar gambar bayi
+                        .size(140.dp)
                         .align(Alignment.Center)
-//                        .offset(y = (-100).dp) // Geser ke bawah agar proporsional
                 )
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Welcome text
             Text(
@@ -180,50 +163,11 @@ fun SignInScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Login Button
-//                Button(
-//                    onClick = {
-//                        navController.navigate(FeatureGraph.Dashboard) {
-//                            popUpTo(RootGraph.Auth) {
-//                                inclusive = true
-//                            }
-//                        }
-//                    },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    shape = RoundedCornerShape(8.dp)
-//                ) {
-//                    Text("Log In")
-//                }
-
-//                val context = LocalContext.current
-//                Button(
-//                    onClick = {
-//                        loginUser(email, password) { result ->
-//                            result.onSuccess {
-//                                navController.navigate(FeatureGraph.Dashboard) {
-//                                    popUpTo(RootGraph.Auth) {
-//                                        inclusive = true
-//                                    }
-//                                }
-//                            }.onFailure { exception ->
-//                                // Misal: munculin Toast atau Snackbar error
-//                                println("Login failed: ${exception.message}")
-//                                Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
-//                            }
-//                        }
-//                    },
-//                    modifier = Modifier.fillMaxWidth(),
-//                    shape = RoundedCornerShape(8.dp)
-//                ){
-//                    Text("Log In")
-//                }
-
-                val context = LocalContext.current
                 Button(
                     onClick = {
-                        loginUser(email, password) { result ->
+                        viewModel.signInUser(email, password) { result ->
                             result.onSuccess {
-                                navController.navigate(FeatureGraph.Dashboard) {
+                                navController.navigate(RootGraph.Main) {
                                     popUpTo(RootGraph.Auth) {
                                         inclusive = true
                                     }
@@ -240,7 +184,6 @@ fun SignInScreen(
                     Text("Log In")
                 }
 
-
                 // Sign Up
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -255,11 +198,14 @@ fun SignInScreen(
             }
         }
 
-        // Gambar lingkaran bawah
-        CircleBackground(
+        Image(
+            painter = painterResource(R.drawable.foreground),
+            contentDescription = null,
             modifier = Modifier
+                .aspectRatio(2f / 1f)
+                .fillMaxSize()
                 .align(Alignment.BottomCenter)
-                .offset(y = 328.dp)
+                .offset(y = 16.dp)
                 .zIndex(-1f)
         )
     }

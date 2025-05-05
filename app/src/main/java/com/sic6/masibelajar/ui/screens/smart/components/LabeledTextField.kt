@@ -20,7 +20,8 @@ fun LabeledTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyboardDecimals: Boolean = true
 ) {
     Column(modifier = modifier) {
         Text(
@@ -33,7 +34,7 @@ fun LabeledTextField(
             onValueChange = onValueChange,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal
+                keyboardType = if (keyboardDecimals) KeyboardType.Decimal else KeyboardType.Uri
             ),
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,

@@ -2,7 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+
+    // Dagger
+    id("com.google.dagger.hilt.android")
+
+    // Room
+    alias(libs.plugins.androidx.room)
+
+    // KSP
+    alias(libs.plugins.devtools.ksp)
 
     // Serialization
     alias(libs.plugins.kotlin.serialization)
@@ -38,6 +46,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
     buildFeatures {
         compose = true
@@ -83,10 +94,16 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Okhttp
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation(libs.okhttp)
+
+    // dagger hilt
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.android.compiler)
 
     // room
+    annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 }

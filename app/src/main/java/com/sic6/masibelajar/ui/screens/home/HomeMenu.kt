@@ -1,7 +1,7 @@
 package com.sic6.masibelajar.ui.screens.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Add
@@ -26,11 +28,14 @@ import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,12 +55,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.sic6.masibelajar.R
 import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.domain.enums.EventType
 import com.sic6.masibelajar.ui.components.Base64Image
 import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
-import com.sic6.masibelajar.ui.screens.smart.camera.Point
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
 @Preview(
@@ -78,68 +80,56 @@ fun HomeScreen(
     navController: NavHostController,
 ) {
     val response by viewModel.response.collectAsState()
-    val sharedUsers = listOf(
-        R.mipmap.ic_lokari_2,
-        R.mipmap.ic_lokari_3,
-    )
+    val history by viewModel.history.collectAsState()
     val activeWarning = remember { mutableStateOf(EventType.NONE) }
-    val isDialogOpen = remember { mutableStateOf(false) }
+    val showShareDialog = remember { mutableStateOf(false) }
+    val color = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.error,
+    ).random()
+    val color1 = MaterialTheme.colorScheme.error
+    val sharedUserEmails = remember { mutableStateListOf<Pair<String, Color>>(
+        Pair("You", color1),
+    ) }
+    val scrollState = rememberScrollState()
 
-    LaunchedEffect(Unit) {
-        viewModel.send(
-            VideoStreamRequest(
-                id = "stream_3",
-                points = listOf(
-                    listOf(787, 955),
-                    listOf(384,1047),
-                    listOf(365, 65),
-                    listOf(787, 49)
-                ),
-//                url = "http://192.168.137.213:81/stream",
-                url = "storages/sample/Stream2.mp4",
-//                url = "test/data/Fall.mp4",
-                time_threshold = 5,
-                preview = true,
-                track = true
-            )
-        )
+    LaunchedEffect(history) {
+        if (history.isNotEmpty()) {
+            activeWarning.value = history.last().type
+        }
     }
 
-    if (activeWarning.value == EventType.FALL && !isDialogOpen.value) {
+    if (activeWarning.value == EventType.FALL) {
         AlertDialogComponent(
             title = "URGENT!",
             body = "Fall detected! Please check immediately!",
             icon = Icons.AutoMirrored.Filled.DirectionsRun,
             confirmText = "Exit",
-            onDismissRequest = {
-                activeWarning.value = EventType.NONE
-                isDialogOpen.value = true
-            }
+            onDismissRequest = { activeWarning.value = EventType.NONE }
         )
-    } else if (activeWarning.value == EventType.MISSING && !isDialogOpen.value) {
+    } else if (activeWarning.value == EventType.MISSING) {
         AlertDialogComponent(
             title = "WARNING!",
             body = "Person detected in the Safezone for an extended time",
             icon = Icons.Rounded.Error,
             confirmText = "Exit",
-            onDismissRequest = {
-                activeWarning.value = EventType.NONE
-                isDialogOpen.value = true
-            }
+            onDismissRequest = { activeWarning.value = EventType.NONE }
         )
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .verticalScroll(scrollState),
     ) {
         // Title
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(top = 4.dp, bottom = 16.dp)
+                .padding(vertical = 16.dp)
                 .fillMaxWidth()
         ) {
             Column {
@@ -164,96 +154,110 @@ fun HomeScreen(
             }
         }
 
-        // Video View Placeholder
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp)
-//                .background(MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(12.dp))
-//                .clip(RoundedCornerShape(8.dp))
-//        ) {
-//            // Here you can add your Video Streaming
+        if (response != null) {
+            response?.let { res ->
+                Base64Image(
+                    base64String = res.data.frame,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
 //            Text(
-//                text = "CAM 1",
-//                modifier = Modifier.padding(8.dp)
+//                text = "Realtime ${res.data.results.timestamp}",
+//                style = MaterialTheme.typography.labelMedium,
+//                modifier = Modifier.align(Alignment.CenterHorizontally)
 //            )
-//        }
 
-        response?.let { res ->
+                Spacer(modifier = Modifier.height(16.dp))
 
-            if (res.data.results.fall) {
-                activeWarning.value = EventType.FALL
-            } else if (res.data.results.is_there_something_wrong == true) {
-                activeWarning.value = EventType.MISSING
+                // Button actions
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    ActionButton(
+                        title = "Fullscreen",
+                        icon = Icons.Default.Fullscreen,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ActionButton(
+                        title = "Screenshot",
+                        icon = Icons.Outlined.CameraAlt,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ActionButton(
+                        title = "Playback",
+                        icon = Icons.Default.SlowMotionVideo,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Inside
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    VisitorCard(
+                        title = "People Inside",
+                        count = res.data.results.counts.inside,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Visitor Counts
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    VisitorCard(
+                        title = "Adult Visitor",
+                        count = res.data.results.counts.non_toddler,
+                        modifier = Modifier.weight(1f)
+                    )
+                    VisitorCard(
+                        title = "Toddler Visitor",
+                        count = res.data.results.counts.toddler,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
-
-            Base64Image(
-                base64String = res.data.frame,
+        } else {
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Realtime ${res.data.results.timestamp}",
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Button actions
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
+                    .height(180.dp)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clip(RoundedCornerShape(12.dp))
             ) {
-                ActionButton(title = "Fullscreen", icon = Icons.Default.Fullscreen, modifier = Modifier.weight(1f))
-                ActionButton(title = "Screenshot", icon = Icons.Outlined.CameraAlt, modifier = Modifier.weight(1f))
-                ActionButton(title = "Playback", icon = Icons.Default.SlowMotionVideo, modifier = Modifier.weight(1f))
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Inside
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                VisitorCard(title = "People Inside", count = res.data.results.counts.inside, modifier = Modifier.weight(1f))
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Visitor Counts
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                VisitorCard(title = "Adult Visitor", count = res.data.results.counts.non_toddler, modifier = Modifier.weight(1f))
-                VisitorCard(title = "Toddler Visitor", count = res.data.results.counts.toddler, modifier = Modifier.weight(1f))
+                CircularProgressIndicator()
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Tambahkan ini di dalam HomeScreen composable
-        val sharedUserEmails = remember { mutableStateListOf<String>() }
-        val showDialog = remember { mutableStateOf(false) }
-
-// Shared User Section
         SharedUsersSection(sharedUsers = sharedUserEmails) {
-            showDialog.value = true
+            showShareDialog.value = true
         }
+        Spacer(modifier = Modifier.height(16.dp))
 
-        if (showDialog.value) {
+        if (showShareDialog.value) {
             AddUserDialog(
-                onDismiss = { showDialog.value = false },
+                onDismiss = { showShareDialog.value = false },
                 onAddUserSuccess = { username, email ->
-                    sharedUserEmails.add(email)
-                    showDialog.value = false
+                    sharedUserEmails.add(Pair(email, color))
+                    showShareDialog.value = false
                 }
             )
         }
@@ -305,7 +309,7 @@ fun VisitorCard(title: String, count: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SharedUsersSection(sharedUsers: List<String>, onAddUser: () -> Unit) {
+fun SharedUsersSection(sharedUsers: List<Pair<String, Color>>, onAddUser: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -329,19 +333,19 @@ fun SharedUsersSection(sharedUsers: List<String>, onAddUser: () -> Unit) {
         ) {
             Row(
                 modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(-8.dp)
+                horizontalArrangement = Arrangement.spacedBy((-8).dp)
             ) {
-                sharedUsers.forEach { email ->
+                sharedUsers.forEach { (email, color) ->
                     Box(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary),
+                            .background(color),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = email.first().uppercase(),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.surface,
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center
                         )
@@ -357,7 +361,7 @@ fun SharedUsersSection(sharedUsers: List<String>, onAddUser: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add User",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.surface
                 )
             }
         }
@@ -425,11 +429,12 @@ fun AddUserDialog(
         },
         text = {
             Column {
-                Text(text = "Enter user email:")
-                androidx.compose.material3.OutlinedTextField(
+                Text(text = "Enter user email")
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
                     value = emailState.value,
                     onValueChange = { emailState.value = it },
-                    label = { Text("Email") },
+                    placeholder = { Text("Email") },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -447,7 +452,7 @@ fun AddUserDialog(
             }
         },
         dismissButton = {
-            Button(onClick = onDismiss) {
+            TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
         }

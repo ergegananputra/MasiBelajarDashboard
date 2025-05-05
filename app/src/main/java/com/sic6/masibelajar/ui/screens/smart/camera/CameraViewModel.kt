@@ -2,32 +2,60 @@ package com.sic6.masibelajar.ui.screens.smart.camera
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sic6.masibelajar.data.local.PrefManager
+import com.sic6.masibelajar.domain.entities.Point
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CameraViewModel : ViewModel() {
+@HiltViewModel
+class CameraViewModel @Inject constructor(
+    private val prefManager: PrefManager,
+) : ViewModel() {
     private val _state = MutableStateFlow(
         CameraScreenState(
-//            ipCamera = "storages/sample/Stream2.mp4",
-            ipCamera = "http://192.168.137.213:81/stream",
+            ipCamera = "",
+//            ipCamera = "ws://10.33.35.199:8000/v1/main-con",
+            timeThreshold = 10,
             points = listOf(
-                Point(0, 787, 955),
-                Point(1, 384,1047),
-                Point(2, 365, 65),
-                Point(3, 787, 49)
+                Point(0, 0, 0),
+                Point(1, 0,0),
+                Point(2, 0, 0),
             )
         )
     )
     val state = _state.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            _state.value = CameraScreenState(
+                ipCamera = prefManager.getUrl(),
+                timeThreshold = prefManager.getTimeThreshold(),
+                targetClass = prefManager.getTargetClass(),
+                points = prefManager.getPoints()
+            )
+        }
+    }
 
+    fun save() {
+        viewModelScope.launch {
+            prefManager.setUrl(state.value.ipCamera)
+            prefManager.setTimeThreshold(state.value.timeThreshold)
+            prefManager.setTargetClass(state.value.targetClass)
+            prefManager.setPoints(state.value.points)
+        }
     }
 
     fun setIpCamera(ipCamera: String) {
         _state.update { it.copy(ipCamera = ipCamera) }
+    }
+
+    fun setTimeThreshold(timeThreshold: String) {
+        val time = timeThreshold.toIntOrNull() ?: 0
+        _state.update { it.copy(timeThreshold = time) }
     }
 
     fun setPointX(index: Int, x: Int) {
@@ -76,7 +104,7 @@ class CameraViewModel : ViewModel() {
                     for (i in pointsLength until number) {
                         _state.update { state ->
                             val points = state.points.toMutableList()
-                            points.add(Point(i + 1, 0, 0))
+                            points.add(Point(i, 0, 0))
                             state.copy(points = points)
                         }
                     }
@@ -92,9 +120,25 @@ class CameraViewModel : ViewModel() {
                 }
             }
         }
-
-
     }
 
+    fun addTarget(targetClass: String) {
+        _state.update { state ->
+            val targetClasses = state.targetClass.toMutableList()
+            if (!targetClasses.contains(targetClass)) {
+                targetClasses.add(targetClass)
+            }
+            state.copy(targetClass = targetClasses)
+        }
+    }
 
+    fun removeTarget(targetClass: String) {
+        _state.update { state ->
+            val targetClasses = state.targetClass.toMutableList()
+            if (targetClasses.contains(targetClass)) {
+                targetClasses.remove(targetClass)
+            }
+            state.copy(targetClass = targetClasses)
+        }
+    }
 }

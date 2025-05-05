@@ -1,8 +1,11 @@
 package com.sic6.masibelajar.ui.screens.smart.camera
 
 import android.widget.Toast
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,11 +42,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -67,7 +76,7 @@ fun CameraScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     videoStreamViewModel: VideoStreamViewModel = viewModel(),
-    cameraViewModel: CameraViewModel = viewModel()
+    cameraViewModel: CameraViewModel = hiltViewModel()
 ) {
     val state by cameraViewModel.state.collectAsStateWithLifecycle()
     val response by videoStreamViewModel.response.collectAsState()
@@ -98,11 +107,13 @@ fun CameraScreen(
                                         listOf(point.x, point.y)
                                     },
                                     preview = true,
-                                    time_threshold = 30,
+                                    target_class = cameraViewModel.state.value.targetClass,
+                                    time_threshold = cameraViewModel.state.value.timeThreshold,
                                     track = true,
                                     url = cameraViewModel.state.value.ipCamera
                                 )
                             )
+                            cameraViewModel.save()
                             Toast.makeText(context, "Configuration saved", Toast.LENGTH_SHORT).show()
                         },
                         shape = RoundedCornerShape(8.dp),
@@ -126,6 +137,7 @@ fun CameraScreen(
                 label = "IP Camera Input",
                 value = state.ipCamera,
                 onValueChange = cameraViewModel::setIpCamera,
+                keyboardDecimals = false,
                 modifier = Modifier.fillMaxWidth()
             )
             Column {
@@ -135,13 +147,46 @@ fun CameraScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 if (response != null) {
-                    Base64Image(
-                        base64String = response!!.data.frame,
+                    BoxWithConstraints(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(180.dp)
                             .clip(RoundedCornerShape(12.dp))
-                    )
+                    ) {
+                        val containerWidth = constraints.maxWidth.toFloat()
+                        val containerHeight = constraints.maxHeight.toFloat()
+
+                        Base64Image(
+                            base64String = response!!.data.frame,
+                            modifier = Modifier.matchParentSize()
+                        )
+
+                        Canvas(modifier = Modifier.matchParentSize().scale(0.52f)) {
+                            val path = Path().apply {
+                                if (state.points.isNotEmpty()) {
+                                    moveTo(state.points[0].x.toFloat() - 460, state.points[0].y.toFloat() - 290)
+                                    for (i in 1 until state.points.size) {
+                                        lineTo(state.points[i].x.toFloat() - 460, state.points[i].y.toFloat() - 290)
+                                    }
+                                    close()
+                                }
+                            }
+
+                            drawPath(
+                                path = path,
+                                color = Color(0xFFFF0000),
+                                style = Stroke(width = 4f)
+                            )
+
+                            state.points.forEach {
+                                drawCircle(
+                                    color = Color(0xFFFF0000),
+                                    radius = 8f,
+                                    center = Offset(it.x.toFloat(), it.y.toFloat())
+                                )
+                            }
+                        }
+                    }
                 } else {
                     Row(
                         horizontalArrangement = Arrangement.Center,

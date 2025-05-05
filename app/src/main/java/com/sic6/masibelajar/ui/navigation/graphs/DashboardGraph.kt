@@ -2,6 +2,7 @@ package com.sic6.masibelajar.ui.navigation.graphs
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,7 +44,7 @@ sealed class DashboardGraph {
             parentNavController: NavHostController,
 //            eventHandler : (DashboardGraph) -> Unit,
             modifier: Modifier = Modifier,
-            viewModel: VideoStreamViewModel = viewModel()
+            viewModel: VideoStreamViewModel = hiltViewModel()
         ) {
             NavHost(
                 navController = navController,
@@ -85,7 +86,7 @@ sealed class DashboardGraph {
                 composable<Setting> {
                     SettingScreen(
                         modifier = modifier,
-                        navController = navController,
+                        navController = parentNavController,
                     )
                 }
             }
