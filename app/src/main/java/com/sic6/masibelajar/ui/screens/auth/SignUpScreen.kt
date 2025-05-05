@@ -1,7 +1,6 @@
 package com.sic6.masibelajar.ui.screens.auth
 
 import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,7 +46,6 @@ import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
 import com.sic6.masibelajar.ui.navigation.graphs.FeatureGraph
 import com.sic6.masibelajar.ui.navigation.graphs.RootGraph
-import com.sic6.masibelajar.ui.screens.components.CircleBackground
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
 @Preview(

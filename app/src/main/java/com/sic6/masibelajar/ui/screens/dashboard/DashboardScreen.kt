@@ -10,7 +10,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.ui.navigation.graphs.DashboardGraph
 import com.sic6.masibelajar.ui.screens.dashboard.components.AppBottomNavigation
-import com.sic6.masibelajar.ui.screens.dashboard.components.AppTopBar
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
 
 @Preview(

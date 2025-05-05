@@ -2,17 +2,13 @@ package com.sic6.masibelajar.ui.navigation.menus
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.SentimentSatisfied
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.SentimentSatisfied
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Videocam
-import androidx.compose.material.icons.twotone.MenuBook
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.sic6.masibelajar.ui.navigation.graphs.DashboardGraph
 

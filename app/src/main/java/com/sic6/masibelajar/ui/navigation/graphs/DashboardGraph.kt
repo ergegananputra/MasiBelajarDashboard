@@ -3,7 +3,6 @@ package com.sic6.masibelajar.ui.navigation.graphs
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,8 +11,8 @@ import com.sic6.masibelajar.ui.screens.home.HomeScreen
 import com.sic6.masibelajar.ui.screens.monitoring.HistoryScreen
 import com.sic6.masibelajar.ui.screens.setting.SettingScreen
 import com.sic6.masibelajar.ui.screens.smart.AlarmScreen
-import com.sic6.masibelajar.ui.screens.smart.camera.CameraScreen
 import com.sic6.masibelajar.ui.screens.smart.SmartSettingScreen
+import com.sic6.masibelajar.ui.screens.smart.camera.CameraScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
