@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,9 +49,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.R
+import com.sic6.masibelajar.ui.screens.SharedUser.SharedUserViewModel
 import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
+import com.sic6.masibelajar.ui.screens.home.AddUserDialog
+import com.sic6.masibelajar.ui.screens.home.SharedUsersSection
 import com.sic6.masibelajar.ui.screens.smart.camera.CameraViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.livedata.observeAsState
 
 @Preview(showBackground = true)
 @Composable
@@ -70,6 +76,18 @@ fun AlarmScreen(
     var fallDetection by remember { mutableStateOf(false) }
     var safezoneDetection by remember { mutableStateOf(true) }
     var targetClass by remember { mutableStateOf("Toddler") }
+    val sharedUserEmails = remember { mutableStateListOf<String>() }
+    val showDialog = remember { mutableStateOf(false) }
+
+    val sharedUserViewModel: SharedUserViewModel = viewModel()
+    val sharedUsers by sharedUserViewModel.sharedUsers.observeAsState(emptyList())
+
+    SharedUsersSection(
+        sharedUsers = sharedUsers.map { it.email },
+        onAddUser = { showDialog.value = true }
+    )
+
+
 
     Scaffold(
         topBar = {
@@ -167,50 +185,28 @@ fun AlarmScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = "Share Notification",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                // Placeholder images. Replace with actual image loading in production.
-                listOf("Adiel", "Marwah").forEach { name ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.mipmap.ic_lokari_2), // Replace with actual image
-                            contentDescription = name,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                        )
-                        Text(name, fontSize = 12.sp)
-                    }
-                }
+            SharedUsersSection(sharedUsers = sharedUserEmails) {
+                showDialog.value = true
+            }
 
-                IconButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceContainer,
-                            shape = CircleShape
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            shape = CircleShape
-                        )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add User",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+            if (showDialog.value) {
+//                AddUserDialog(
+//                    onDismiss = { showDialog.value = false },
+//                    onAddUserSuccess = { username, email ->
+//                        sharedUserEmails.add(email)
+//                        showDialog.value = false
+//                    }
+//                )
+                AddUserDialog(
+                    onDismiss = { showDialog.value = false },
+                    onAddUserSuccess = { username, email ->
+                        sharedUserViewModel.addUser(email)
+                        showDialog.value = false
+                    }
+                )
+
             }
         }
     }
 }
+

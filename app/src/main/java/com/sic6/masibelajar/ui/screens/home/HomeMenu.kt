@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ import com.sic6.masibelajar.R
 import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.domain.enums.EventType
 import com.sic6.masibelajar.ui.components.Base64Image
+import com.sic6.masibelajar.ui.screens.SharedUser.SharedUserViewModel
 import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
 import com.sic6.masibelajar.ui.screens.smart.camera.Point
 import com.sic6.masibelajar.ui.theme.MasiBelajarDashboardTheme
@@ -78,12 +80,21 @@ fun HomeScreen(
     navController: NavHostController,
 ) {
     val response by viewModel.response.collectAsState()
-    val sharedUsers = listOf(
-        R.mipmap.ic_lokari_2,
-        R.mipmap.ic_lokari_3,
-    )
+//    val sharedUsers = listOf(
+//        R.mipmap.ic_lokari_2,
+//        R.mipmap.ic_lokari_3,
+//    )
     val activeWarning = remember { mutableStateOf(EventType.NONE) }
     val isDialogOpen = remember { mutableStateOf(false) }
+
+    val sharedUserViewModel: SharedUserViewModel = viewModel()
+    val sharedUsers by sharedUserViewModel.sharedUsers.observeAsState(emptyList())
+    val showDialog = remember { mutableStateOf(false) }
+
+    SharedUsersSection(
+        sharedUsers = sharedUsers.map { it.email },
+        onAddUser = { showDialog.value = true }
+    )
 
     LaunchedEffect(Unit) {
         viewModel.send(
@@ -163,22 +174,6 @@ fun HomeScreen(
                 )
             }
         }
-
-        // Video View Placeholder
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(200.dp)
-//                .background(MaterialTheme.colorScheme.surfaceContainer, shape = RoundedCornerShape(12.dp))
-//                .clip(RoundedCornerShape(8.dp))
-//        ) {
-//            // Here you can add your Video Streaming
-//            Text(
-//                text = "CAM 1",
-//                modifier = Modifier.padding(8.dp)
-//            )
-//        }
-
         response?.let { res ->
 
             if (res.data.results.fall) {
