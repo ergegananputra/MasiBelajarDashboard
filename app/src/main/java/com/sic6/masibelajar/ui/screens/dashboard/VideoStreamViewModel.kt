@@ -19,7 +19,7 @@ class VideoStreamViewModel @Inject constructor(
     private val prefManager: PrefManager
 ) : ViewModel() {
 
-    private val webSocketManager = WebSocketManager("ws://192.168.165.101:8000/v1/main-con")
+    private val webSocketManager = WebSocketManager("ws://10.33.87.59:8000/v1/main-con")
 
     private val _response = MutableStateFlow<VideoStreamResponse?>(null)
     val response = _response.asStateFlow()
@@ -80,6 +80,8 @@ class VideoStreamViewModel @Inject constructor(
     }
 
     fun send(message: VideoStreamRequest) {
+        webSocketManager.disconnect()
+        webSocketManager.connect()
         webSocketManager.send(message)
     }
 

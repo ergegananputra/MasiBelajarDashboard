@@ -59,7 +59,7 @@ fun HistoryScreen(
     ) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Smart Setting",
+            text = "History",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.colorScheme.onBackground
