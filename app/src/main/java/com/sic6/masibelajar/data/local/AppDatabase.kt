@@ -5,15 +5,18 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.sic6.masibelajar.domain.dao.PointDao
+import com.sic6.masibelajar.domain.dao.SharedUserDao
 import com.sic6.masibelajar.domain.entities.Point
+import com.sic6.masibelajar.domain.entities.SharedUser
 
 @Database(
     version = 1,
-    entities = [Point::class]
+    entities = [Point::class, SharedUser::class]
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun pointDao(): PointDao
+    abstract fun sharedUserDao() : SharedUserDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
