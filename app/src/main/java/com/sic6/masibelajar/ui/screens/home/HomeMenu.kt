@@ -1,5 +1,10 @@
 package com.sic6.masibelajar.ui.screens.home
 
+import android.Manifest
+import android.app.NotificationManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.SlowMotionVideo
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Info
@@ -48,13 +54,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.sic6.masibelajar.R
+import com.sic6.masibelajar.data.local.PrefManager
 import com.sic6.masibelajar.domain.enums.EventType
 import com.sic6.masibelajar.ui.components.Base64Image
 import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
@@ -92,10 +104,35 @@ fun HomeScreen(
         Pair("You", color1),
     ) }
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     LaunchedEffect(history) {
         if (history.isNotEmpty()) {
             activeWarning.value = history.last().type
+
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            val title = when (activeWarning.value) {
+                EventType.FALL -> "Fall detected"
+                EventType.MISSING -> "Missing detected"
+                else -> ""
+            }
+
+            val message = when (activeWarning.value) {
+                EventType.FALL -> "Fall detected! Please check immediately!"
+                EventType.MISSING -> "Person detected in the Safezone for an extended time"
+                else -> ""
+            }
+
+            val notification = NotificationCompat.Builder(context, "lokari_notification")
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build()
+
+            notificationManager.notify(1, notification)
         }
     }
 
@@ -138,7 +175,7 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.outline
                 )
                 Text(
-                    text = "Restroom DTEDI Lt.2",
+                    text = PrefManager(navController.context).getRoomName(),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
