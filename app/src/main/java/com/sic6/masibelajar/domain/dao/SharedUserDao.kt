@@ -7,12 +7,13 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.sic6.masibelajar.domain.entities.Point
 import com.sic6.masibelajar.domain.entities.SharedUser
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SharedUserDao {
 
     @Query("SELECT * FROM shared_user")
-    suspend fun getSharedUser(): List<SharedUser>
+    fun getSharedUsers(): List<SharedUser>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSharedUser(user: SharedUser)

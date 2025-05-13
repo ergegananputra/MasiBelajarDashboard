@@ -17,7 +17,7 @@ class SharedUserViewModel @Inject constructor(  private val sharedUserDao: Share
 
     init {
         viewModelScope.launch {
-            _sharedUsers.value = sharedUserDao.getSharedUser()
+            _sharedUsers.value = sharedUserDao.getSharedUsers()
         }
     }
 
@@ -29,7 +29,7 @@ class SharedUserViewModel @Inject constructor(  private val sharedUserDao: Share
                 url = ""
             )
             sharedUserDao.insertSharedUser(user)
-            _sharedUsers.value = sharedUserDao.getSharedUser()
+            _sharedUsers.value = sharedUserDao.getSharedUsers()
         }
     }
 
