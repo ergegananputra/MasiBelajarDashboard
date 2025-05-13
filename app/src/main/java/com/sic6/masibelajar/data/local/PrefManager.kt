@@ -73,7 +73,16 @@ class PrefManager @Inject constructor(@ApplicationContext context: Context) {
         return sharedPreferences.getString("loggedInEmail", null)
     }
 
+    fun setSharedUser(email : String?) {
+        editor.putString("emailSharedUser", email).apply()
+    }
+
+    fun getSharedUser() : String? {
+        return sharedPreferences.getString("emailSharedUser", null)
+    }
+
     fun clear() {
         editor.clear().apply()
     }
+
 }

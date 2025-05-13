@@ -57,6 +57,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.sic6.masibelajar.domain.entities.VideoStreamRequest
 import com.sic6.masibelajar.ui.screens.dashboard.VideoStreamViewModel
+import com.sic6.masibelajar.ui.screens.home.SharedUserViewModel
 import com.sic6.masibelajar.ui.screens.smart.camera.CameraViewModel
 import com.sic6.masibelajar.ui.screens.smart.components.LabeledTextField
 
@@ -72,7 +73,8 @@ fun AlarmScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     videoStreamViewModel: VideoStreamViewModel = viewModel(),
-    cameraViewModel: CameraViewModel = hiltViewModel()
+    cameraViewModel: CameraViewModel = hiltViewModel(),
+    sharedUserViewModel: SharedUserViewModel = hiltViewModel()
 ) {
     val state by cameraViewModel.state.collectAsStateWithLifecycle()
     var fallDetection by remember { mutableStateOf(false) }
