@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface SharedUserDao {
 
     @Query("SELECT * FROM shared_user")
-    fun getSharedUsers(): List<SharedUser>
+    suspend fun getSharedUsers(): List<SharedUser>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSharedUser(user: SharedUser)

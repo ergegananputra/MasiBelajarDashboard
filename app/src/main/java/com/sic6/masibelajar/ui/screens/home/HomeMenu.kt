@@ -4,7 +4,11 @@ import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -62,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -105,36 +110,20 @@ fun HomeScreen(
     ) }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val initial = remember { mutableStateOf(true) }
 
     LaunchedEffect(history) {
         if (history.isNotEmpty()) {
-            activeWarning.value = history.last().type
-
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            val title = when (activeWarning.value) {
-                EventType.FALL -> "Fall detected"
-                EventType.MISSING -> "Missing detected"
-                else -> ""
+            if (!initial.value) {
+                activeWarning.value = history.last().type
+                showNotification(activeWarning.value, context)
+            } else {
+                initial.value = false
             }
-
-            val message = when (activeWarning.value) {
-                EventType.FALL -> "Fall detected! Please check immediately!"
-                EventType.MISSING -> "Person detected in the Safezone for an extended time"
-                else -> ""
-            }
-
-            val notification = NotificationCompat.Builder(context, "lokari_notification")
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .build()
-
-            notificationManager.notify(1, notification)
         }
     }
+
+    NotificationPermissionRequest()
 
     if (activeWarning.value == EventType.FALL) {
         AlertDialogComponent(
@@ -404,7 +393,6 @@ fun SharedUsersSection(sharedUsers: List<Pair<String, Color>>, onAddUser: () -> 
     }
 }
 
-
 @Composable
 fun AlertDialogComponent(
     title: String,
@@ -495,4 +483,54 @@ fun AddUserDialog(
     )
 }
 
+fun showNotification(type: EventType, context: Context) {
+    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+    val title = when (type) {
+        EventType.FALL -> "Fall detected"
+        EventType.MISSING -> "Missing detected"
+        else -> ""
+    }
+
+    val message = when (type) {
+        EventType.FALL -> "Fall detected! Please check immediately!"
+        EventType.MISSING -> "Person detected in the Safezone for an extended time"
+        else -> ""
+    }
+
+    val notification = NotificationCompat.Builder(context, "lokari_notification")
+        .setSmallIcon(R.drawable.lokari_logo)
+        .setContentTitle(title)
+        .setContentText(message)
+        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
+        .build()
+
+    notificationManager.notify(1, notification)
+}
+
+@Composable
+fun NotificationPermissionRequest() {
+    val context = LocalContext.current
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val shouldShowPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+    LaunchedEffect(Unit) {
+        if (shouldShowPermission && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+}

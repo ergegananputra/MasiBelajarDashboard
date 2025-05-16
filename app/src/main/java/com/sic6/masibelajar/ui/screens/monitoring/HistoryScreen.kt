@@ -95,7 +95,7 @@ fun HistoryScreen(
                     else -> Icons.Default.Person
                 },
                 description = hist.name,
-                time = hist.time,
+                time = hist.time.split(" ")[1],
                 color = when (hist.type) {
                     EventType.FALL, EventType.MISSING -> MaterialTheme.colorScheme.error
                     else -> MaterialTheme.colorScheme.primary

@@ -6,12 +6,12 @@ import com.sic6.masibelajar.data.local.PrefManager
 import com.sic6.masibelajar.domain.dao.SharedUserDao
 import com.sic6.masibelajar.domain.entities.SharedUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 //class SharedUserViewModel @Inject constructor(private val sharedUserDao: SharedUserDao, private val prefManager: PrefManager, ) : ViewModel() {
